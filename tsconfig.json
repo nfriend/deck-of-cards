@@ -1,0 +1,8 @@
+{
+	"compilerOptions": {
+		"target": "ES5",
+		"sourceMap": true,
+		"watch": true,
+		"out": "scripts/deck-of-cards.js"
+	}
+}

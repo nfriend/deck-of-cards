@@ -1,0 +1,18 @@
+body, html {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+}
+
+body {
+	background-image: url('../images/wood.jpg');
+}
+
+.card {
+	position: absolute;
+	width: 170px;
+	height: 237px;
+	border-radius: 10px;
+	/*background-image: url('../images/test.svg');*/
+	border: 1px solid #999;
+}
