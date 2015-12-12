@@ -4,7 +4,7 @@ import websocket = require('websocket');
 import http = require('http');
 import Utility = require('./Utility');
 import MessageProcessor = require('./MessageProcessor');
-import log = require('./log');
+import log = require('./log'); 
 
 var WebSocketServer = websocket.server;
 
