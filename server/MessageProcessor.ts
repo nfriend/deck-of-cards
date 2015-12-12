@@ -1,4 +1,9 @@
+'use strict';
+
 import websocket = require('websocket');
+import log = require('./log');
+
+export = MessageProcessor;
 
 interface Message {
 	messageType: string,
@@ -9,16 +14,28 @@ interface GameClientMapping {
 	[gameId: string]: Array<websocket.connection>
 }
 
-var gameIdToClients: GameClientMapping = {};
-
 class MessageProcessor {
+	
+	public static Instance: MessageProcessor;
+	private gameIdToClients: GameClientMapping;
+	
+	constructor() {
+		this.gameIdToClients = {};
+	}
+	
 	processMessage(message: Message) {
+		log('Recieved messageType "' + message.messageType + '"');
+		
 		if (message.messageType === 'join') {
-
+			
 		} else {
-			console.log('Unknown messageType "' + message.messageType + '"');
+			log('Unknown messageType "' + message.messageType + '"');
 		}
+	}
+	
+	removeClient(connection: websocket.connection) {
+		log('Client disconnected');
 	}
 }
 
-export = MessageProcessor;
+MessageProcessor.Instance = new MessageProcessor();
