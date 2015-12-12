@@ -83,6 +83,7 @@ var DeckOfCards;
         if (selected) {
             selected.rotateY(.05);
         }
+        camera.rotateOnAxis(new THREE.Vector3(0, 0, 1), .01);
         render();
     }
     function render() {
