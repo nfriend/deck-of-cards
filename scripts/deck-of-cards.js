@@ -1,5 +1,113 @@
 var DeckOfCards;
 (function (DeckOfCards) {
+    var WebsocketService = (function () {
+        function WebsocketService() {
+            var _this = this;
+            this._recieveHandlers = [];
+            this._errorHandlers = [];
+            this._connectHandlers = [];
+            this._disconnectHandlers = [];
+            // used to differentiate between a disconnect and a failure to connect initially
+            this.connectionWasOpen = false;
+            this.connect = function () {
+                if (document.location.hostname === 'nathanfriend.com' || document.location.hostname === 'nathanfriend.io' || document.location.hostname === 'nathanfriend.cloudapp.net') {
+                    _this.connection = new WebSocket('ws://nathanfriend.io:17765/deckofcards/server', 'deck-of-cards-protocol');
+                }
+                else if (document.location.hostname === 'dev.nathanfriend.com' || document.location.hostname === 'dev.nathanfriend.io' || document.location.hostname === 'dev.nathanfriend.cloudapp.net') {
+                    _this.connection = new WebSocket('ws://dev.nathanfriend.io:17765/deckofcards/server', 'deck-of-cards-protocol');
+                }
+                else {
+                    _this.connection = new WebSocket('ws://127.0.0.1:17765', 'deck-of-cards-protocol');
+                }
+                _this.connection.onopen = function () {
+                    _this.connectionWasOpen = true;
+                    _this._connectHandlers.forEach(function (element, index, array) { element(); });
+                };
+                _this.connection.onclose = function () {
+                    if (_this.connectionWasOpen) {
+                        _this._disconnectHandlers.forEach(function (element, index, array) { element(); });
+                    }
+                };
+                _this.connection.onerror = function () {
+                    if (!_this.connectionWasOpen) {
+                        _this._errorHandlers.forEach(function (element, index, array) { element(); });
+                    }
+                };
+                _this.connection.onmessage = function (message) {
+                    try {
+                        var data = JSON.parse(message.data);
+                    }
+                    catch (e) {
+                        console.log('DeckOfCards: websocketConnection service: failed to JSON.parse data: ' + data);
+                        _this._errorHandlers.forEach(function (element, index, array) { element(data); });
+                    }
+                    _this._recieveHandlers.forEach(function (element, index, array) { element(data); });
+                };
+            };
+            this.send = function (data) {
+                if (_this.connection) {
+                    _this.connection.send(JSON.stringify(data));
+                }
+            };
+            this.on = function (eventType, handler) {
+                if (eventType === 'receive') {
+                    _this._recieveHandlers.push(handler);
+                }
+                else if (eventType === 'error') {
+                    _this._errorHandlers.push(handler);
+                }
+                else if (eventType === 'connect') {
+                    _this._connectHandlers.push(handler);
+                }
+                else if (eventType === 'disconnect') {
+                    _this._disconnectHandlers.push(handler);
+                }
+            };
+            this.off = function (eventType, handler) {
+                if (eventType === 'recieve') {
+                    if (_this._recieveHandlers.indexOf(handler) === -1) {
+                        return false;
+                    }
+                    else {
+                        _this._recieveHandlers.splice(_this._recieveHandlers.indexOf(handler), 1);
+                        return true;
+                    }
+                }
+                else if (eventType === 'error') {
+                    if (_this._errorHandlers.indexOf(handler) === -1) {
+                        return false;
+                    }
+                    else {
+                        _this._errorHandlers.splice(_this._errorHandlers.indexOf(handler), 1);
+                        return true;
+                    }
+                }
+                else if (eventType === 'connect') {
+                    if (_this._connectHandlers.indexOf(handler) === -1) {
+                        return false;
+                    }
+                    else {
+                        _this._connectHandlers.splice(_this._connectHandlers.indexOf(handler), 1);
+                        return true;
+                    }
+                }
+                else if (eventType === 'disconnect') {
+                    if (_this._disconnectHandlers.indexOf(handler) === -1) {
+                        return false;
+                    }
+                    else {
+                        _this._disconnectHandlers.splice(_this._disconnectHandlers.indexOf(handler), 1);
+                        return true;
+                    }
+                }
+            };
+        }
+        return WebsocketService;
+    })();
+    DeckOfCards.WebsocketService = WebsocketService;
+})(DeckOfCards || (DeckOfCards = {}));
+var DeckOfCards;
+(function (DeckOfCards) {
     function loadTexture(url) {
         var defer = $.Deferred();
         new THREE.TextureLoader().load(url, function (texture) {
@@ -89,5 +197,12 @@ var DeckOfCards;
     function render() {
         renderer.render(scene, camera);
     }
+    var wss = new DeckOfCards.WebsocketService();
+    wss.on('connect', function () {
+        wss.send({
+            messageType: 'join'
+        });
+    });
+    wss.connect();
 })(DeckOfCards || (DeckOfCards = {}));
 //# sourceMappingURL=deck-of-cards.js.map

@@ -4,5 +4,9 @@
 		"sourceMap": true,
 		"watch": true,
 		"out": "scripts/deck-of-cards.js"
-	}
+	},
+	"exclude": [
+		"node_modules",
+		"server"
+	]
 }

@@ -21,7 +21,7 @@ module DeckOfCards {
 		['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'].forEach(card => {
 			imagePaths.push('./images/cards/' + suit + '/' + card + '.svg');
 		});
-	})
+	});
 
 	DeckOfCards.loadTextures(imagePaths).then(textures => {
 
@@ -104,4 +104,13 @@ module DeckOfCards {
 	function render() {
 		renderer.render(scene, camera);
 	}
+	
+	var wss = new WebsocketService();
+	wss.on('connect', () => {
+		wss.send({
+			messageType: 'join'
+		})
+	});
+	wss.connect();
+	
 }
