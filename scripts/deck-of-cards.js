@@ -106,6 +106,127 @@ var DeckOfCards;
     })();
     DeckOfCards.WebsocketService = WebsocketService;
 })(DeckOfCards || (DeckOfCards = {}));
+/// <refernce
+var DeckOfCards;
+(function (DeckOfCards) {
+    var ViewModel;
+    (function (ViewModel) {
+        var ChatViewModel = (function () {
+            function ChatViewModel() {
+                var _this = this;
+                this.messages = ko.observableArray([]);
+                this.chatInput = ko.observable(null);
+                this.chatInputKeyDown = function (e) {
+                    if (e.which === DeckOfCards.Key.Enter && !e.shiftKey) {
+                        e.preventDefault();
+                        _this.send();
+                        return false;
+                    }
+                    return true;
+                };
+                this.sendIsDisabled = ko.pureComputed(function () {
+                    return DeckOfCards.Utility.isNullUndefinedOrWhitespace(_this.chatInput());
+                });
+                this.send = function () {
+                    if (_this.sendIsDisabled()) {
+                        return;
+                    }
+                    _this.messages.push({
+                        name: 'Nathan',
+                        message: _this.chatInput(),
+                        isMe: true
+                    });
+                    _this.chatInput('');
+                };
+                this.messages.push({
+                    name: 'Nathan',
+                    message: 'Hey, this is pretty neat!',
+                    isMe: true
+                });
+                this.messages.push({
+                    name: 'Derek',
+                    message: 'Yeah it is.'
+                });
+                this.messages.push({
+                    name: 'Emily',
+                    message: 'Cool.'
+                });
+                this.messages.push({
+                    name: 'Nathan',
+                    message: 'Hey, this is pretty neat!',
+                    isMe: true
+                });
+            }
+            return ChatViewModel;
+        })();
+        ViewModel.ChatViewModel = ChatViewModel;
+    })(ViewModel = DeckOfCards.ViewModel || (DeckOfCards.ViewModel = {}));
+})(DeckOfCards || (DeckOfCards = {}));
+/// <reference path="./viewModel/ChatViewModel" />
+var DeckOfCards;
+(function (DeckOfCards) {
+    ko.components.register('chat', {
+        template: { url: './views/chat.html' },
+        viewModel: DeckOfCards.ViewModel.ChatViewModel
+    });
+})(DeckOfCards || (DeckOfCards = {}));
+(function () {
+    var ajaxCallsInProgress = [];
+    function templateLoaded() {
+        var indicesToRemove = [];
+        for (var i = 0; i < ajaxCallsInProgress.length; i++) {
+            var currentCall = ajaxCallsInProgress[i];
+            if (!currentCall.isCompleted) {
+                break;
+            }
+            else {
+                if (!currentCall.didError) {
+                    ko.components.defaultLoader.loadTemplate(ajaxCallsInProgress[i].templateName, ajaxCallsInProgress[i].markupString, ajaxCallsInProgress[i].callback);
+                }
+                indicesToRemove.unshift(i);
+            }
+        }
+        indicesToRemove.forEach(function (index) {
+            ajaxCallsInProgress.splice(index, 1);
+        });
+    }
+    function getTemplateAsync(fullUrl, templateName, templateConfig, callback) {
+        var ajaxCallRecord = {
+            isCompleted: false,
+            didError: false,
+            templateName: templateName,
+            callback: callback,
+            markupString: null
+        };
+        ajaxCallsInProgress.push(ajaxCallRecord);
+        $.ajax({
+            url: fullUrl,
+            success: function (markupString) {
+                ajaxCallRecord.isCompleted = true;
+                ajaxCallRecord.markupString = markupString;
+                templateLoaded();
+            }, error: function (jqXhr, textStatus, errorThrown) {
+                ajaxCallRecord.isCompleted = true;
+                ajaxCallRecord.didError = true;
+                templateLoaded();
+            }
+        });
+    }
+    var templateFromUrlLoader = {
+        loadTemplate: function (templateName, templateConfig, callback) {
+            if (templateConfig.url) {
+                var fullUrl = templateConfig.url;
+                getTemplateAsync(fullUrl, templateName, templateConfig, callback);
+            }
+            else {
+                // Unrecognized config format. Let another loader handle it.
+                callback(null);
+            }
+        }
+    };
+    // Register it
+    ko.components.loaders.unshift(templateFromUrlLoader);
+})();
 var DeckOfCards;
 (function (DeckOfCards) {
     function loadTexture(url) {
@@ -128,81 +249,129 @@ var DeckOfCards;
     }
     DeckOfCards.loadTextures = loadTextures;
 })(DeckOfCards || (DeckOfCards = {}));
+var DeckOfCards;
+(function (DeckOfCards) {
+    function log() {
+        var objects = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            objects[_i - 0] = arguments[_i];
+        }
+        console.log.apply(console, objects);
+    }
+    DeckOfCards.log = log;
+})(DeckOfCards || (DeckOfCards = {}));
+var DeckOfCards;
+(function (DeckOfCards) {
+    var ViewModel;
+    (function (ViewModel) {
+        var DeckOfCardsViewModel = (function () {
+            function DeckOfCardsViewModel() {
+            }
+            return DeckOfCardsViewModel;
+        })();
+        ViewModel.DeckOfCardsViewModel = DeckOfCardsViewModel;
+    })(ViewModel = DeckOfCards.ViewModel || (DeckOfCards.ViewModel = {}));
+})(DeckOfCards || (DeckOfCards = {}));
+/// <reference path="../log" />
+ko.bindingHandlers.log = {
+    update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        var value = valueAccessor();
+        DeckOfCards.log(value);
+    }
+};
+var DeckOfCards;
+(function (DeckOfCards) {
+    (function (Key) {
+        Key[Key["Enter"] = 13] = "Enter";
+        Key[Key["Escape"] = 27] = "Escape";
+    })(DeckOfCards.Key || (DeckOfCards.Key = {}));
+    var Key = DeckOfCards.Key;
+})(DeckOfCards || (DeckOfCards = {}));
+var DeckOfCards;
+(function (DeckOfCards) {
+    var Utility;
+    (function (Utility) {
+        function isNullUndefinedOrWhitespace(s) {
+            if (s === null || isUndefined(s))
+                return true;
+            if (!/\S/.test(s))
+                return true;
+            return false;
+        }
+        Utility.isNullUndefinedOrWhitespace = isNullUndefinedOrWhitespace;
+        function isUndefined(o) {
+            return typeof o === 'undefined';
+        }
+        Utility.isUndefined = isUndefined;
+        function isDefined(o) {
+            return !isUndefined(o);
+        }
+        Utility.isDefined = isDefined;
+        function isString(o) {
+            return typeof o === 'string';
+        }
+        Utility.isString = isString;
+    })(Utility = DeckOfCards.Utility || (DeckOfCards.Utility = {}));
+})(DeckOfCards || (DeckOfCards = {}));
 /// <reference path="loaders" />
+/// <reference path="log" />
+/// <reference path="./viewModel/DeckOfCardsViewModel" />
+/// <reference path="./components" />
+/// <reference path="./customComponentLoader" />
+/// <reference path="./bindings/log-binding" />
+/// <reference path="./Key" />
+/// <reference path="./utility" />
 var DeckOfCards;
 (function (DeckOfCards) {
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 1, 5000);
     var raycaster = new THREE.Raycaster();
-    var objects = [];
-    var selected = null;
     var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    $('#board-container').append(renderer.domElement);
     var light = new THREE.DirectionalLight(0xffffff);
     light.position.set(0, 1, 1).normalize();
     scene.add(light);
-    var imagePaths = ['./images/cards/back.svg', './images/cards/blackjoker.svg', './images/cards/redjoker.svg'];
-    ['hearts', 'diamonds', 'clubs', 'spades'].forEach(function (suit) {
-        ['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'].forEach(function (card) {
-            imagePaths.push('./images/cards/' + suit + '/' + card + '.svg');
-        });
-    });
-    DeckOfCards.loadTextures(imagePaths).then(function (textures) {
-        var backTexture = textures.splice(0, 1)[0];
-        textures.forEach(function (texture) {
-            var card = new THREE.Object3D();
-            var frontGeometry = new THREE.PlaneGeometry(170, 237), frontMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: texture, transparent: true }), frontMesh = new THREE.Mesh(frontGeometry, frontMaterial);
-            var backGeometry = new THREE.PlaneGeometry(170, 237), backMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: backTexture, transparent: true }), backMesh = new THREE.Mesh(backGeometry, backMaterial);
-            backGeometry.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI));
-            card.add(frontMesh);
-            card.add(backMesh);
-            var factor = 600;
-            card.position.set((Math.random() - .5) * factor * 2, (Math.random() - .5) * factor, (Math.random() - .5) * factor / 3);
-            objects.push(frontMesh);
-            objects.push(backMesh);
-            scene.add(card);
-            camera.position.z = 2000;
-        });
-        renderer.domElement.addEventListener('mousemove', onDocumentMouseMove, false);
-        renderer.domElement.addEventListener('mousedown', onDocumentMouseDown, false);
-        renderer.domElement.addEventListener('mouseup', onDocumentMouseUp, false);
-        animate();
-    });
-    function onDocumentMouseDown(event) {
-        event.preventDefault();
-        var mouse = {
-            x: (event.clientX / window.innerWidth) * 2 - 1,
-            y: -(event.clientY / window.innerHeight) * 2 + 1
-        };
-        raycaster.setFromCamera(mouse, camera);
-        var intersects = raycaster.intersectObjects(objects);
-        if (intersects.length > 0) {
-            selected = intersects[0].object.parent;
-            console.log('object to remove: ', selected);
-        }
-    }
-    function onDocumentMouseMove(event) {
-    }
-    function onDocumentMouseUp(event) {
-    }
     function animate() {
         requestAnimationFrame(animate);
-        if (selected) {
-            selected.rotateY(.05);
-        }
-        camera.rotateOnAxis(new THREE.Vector3(0, 0, 1), .01);
         render();
     }
     function render() {
         renderer.render(scene, camera);
     }
-    var wss = new DeckOfCards.WebsocketService();
-    wss.on('connect', function () {
-        wss.send({
-            messageType: 'join'
-        });
-    });
-    wss.connect();
+    ko.applyBindings(new DeckOfCards.ViewModel.DeckOfCardsViewModel());
+})(DeckOfCards || (DeckOfCards = {}));
+var DeckOfCards;
+(function (DeckOfCards) {
+    (function (Suit) {
+        Suit[Suit["Hearts"] = 0] = "Hearts";
+        Suit[Suit["Diamons"] = 1] = "Diamons";
+        Suit[Suit["Spades"] = 2] = "Spades";
+        Suit[Suit["Clubs"] = 3] = "Clubs";
+    })(DeckOfCards.Suit || (DeckOfCards.Suit = {}));
+    var Suit = DeckOfCards.Suit;
+    (function (CardNumber) {
+        CardNumber[CardNumber["Ace"] = 0] = "Ace";
+        CardNumber[CardNumber["Two"] = 1] = "Two";
+        CardNumber[CardNumber["Three"] = 2] = "Three";
+        CardNumber[CardNumber["Four"] = 3] = "Four";
+        CardNumber[CardNumber["Five"] = 4] = "Five";
+        CardNumber[CardNumber["Six"] = 5] = "Six";
+        CardNumber[CardNumber["Seven"] = 6] = "Seven";
+        CardNumber[CardNumber["Eight"] = 7] = "Eight";
+        CardNumber[CardNumber["Nine"] = 8] = "Nine";
+        CardNumber[CardNumber["Ten"] = 9] = "Ten";
+        CardNumber[CardNumber["Jack"] = 10] = "Jack";
+        CardNumber[CardNumber["Queen"] = 11] = "Queen";
+        CardNumber[CardNumber["King"] = 12] = "King";
+        CardNumber[CardNumber["Joker"] = 13] = "Joker";
+    })(DeckOfCards.CardNumber || (DeckOfCards.CardNumber = {}));
+    var CardNumber = DeckOfCards.CardNumber;
+    (function (ItemType) {
+        ItemType[ItemType["Card"] = 0] = "Card";
+        ItemType[ItemType["PokerChip"] = 1] = "PokerChip";
+        ItemType[ItemType["Penny"] = 2] = "Penny";
+    })(DeckOfCards.ItemType || (DeckOfCards.ItemType = {}));
+    var ItemType = DeckOfCards.ItemType;
 })(DeckOfCards || (DeckOfCards = {}));
 //# sourceMappingURL=deck-of-cards.js.map

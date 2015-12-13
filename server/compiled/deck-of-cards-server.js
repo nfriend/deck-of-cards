@@ -29,7 +29,7 @@ wsServer.on('request', function (request) {
         if (message.type === 'utf8') {
             log('Received Message: ' + message.utf8Data);
             var parsedMessage = JSON.parse(message.utf8Data);
-            MessageProcessor.Instance.processMessage(parsedMessage);
+            MessageProcessor.Instance.processMessage(connection, parsedMessage);
         }
         else {
             log('Recieved unsupported message type: "' + message.type + '". Message ignored.');

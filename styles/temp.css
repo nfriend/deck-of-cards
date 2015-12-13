@@ -1,0 +1,58 @@
+body, html {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	margin: 0;
+}
+
+canvas {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+body {
+	background-image: url('../images/wood.jpg');
+}
+
+#board-container {
+	float: left;
+	width: 80%;
+}
+
+chat {
+	float: right;
+	position: relative;
+	width: 20%;
+	background: white;
+	height: 100%;
+}
+
+chat .message-container {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-bottom: 170px;
+	bottom: 0px;
+}
+
+chat .message-container .message-scroll-container {
+	overflow-y: scroll;
+	height: 100%;
+	bottom: 0px;
+}
+
+chat .input-container {
+	padding-left: 10px;
+	padding-right: 10px;
+	position: absolute;
+	bottom: 10px;
+	width: 100%;
+}
+
+chat .input-container #chat-input {
+	resize: none;
+	margin-bottom: 5px;
+}

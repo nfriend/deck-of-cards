@@ -1,0 +1,15 @@
+<div class="message-container">
+	<div class="message-scroll-container" data-bind="foreach: { data: messages }">
+		<div>
+			<b data-bind="text: name + ': '"></b>
+			<span data-bind="text: message"></span>
+		</div>
+	</div>
+</div>
+<div class="input-container">
+	<hr />
+	<textarea id="chat-input" class="form-control" rows="4" data-bind="value: chatInput, valueUpdate: ['afterkeydown'], event: { keydown: function(data, event) { return chatInputKeyDown(event); }  }"></textarea>
+	<button class="btn btn-default form-control" data-bind="click: send, disable: sendIsDisabled">
+		<i class="fa fa-paper-plane-o"></i>&nbsp; Send
+	</button>
+</div>

@@ -5,6 +5,7 @@ import http = require('http');
 import Utility = require('./Utility');
 import MessageProcessor = require('./MessageProcessor');
 import log = require('./log'); 
+import Connection = require('./Connection');
 
 var WebSocketServer = websocket.server;
 
@@ -28,14 +29,14 @@ wsServer.on('request', request => {
 		return;
 	}
 
-	var connection = request.accept('deck-of-cards-protocol', request.origin);
+	var connection: Connection = request.accept('deck-of-cards-protocol', request.origin);
 	log('Connection accepted.');
 
 	connection.on('message', message => {
 		if (message.type === 'utf8') {
 			log('Received Message: ' + message.utf8Data);
 			var parsedMessage = JSON.parse(message.utf8Data);
-			MessageProcessor.Instance.processMessage(parsedMessage);
+			MessageProcessor.Instance.processMessage(connection, parsedMessage);
 		} else {
 			log('Recieved unsupported message type: "' + message.type + '". Message ignored.');
 		}

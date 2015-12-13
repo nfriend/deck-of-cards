@@ -1,18 +1,13 @@
 'use strict';
 
-import websocket = require('websocket');
+import Connection = require('./Connection');
 import log = require('./log');
+import Messages = require('./Messages');
+import GameClientMapping = require('./GameClientMapping');
+import chat = require('./actions/chat');
+import join = require('./actions/join');
 
 export = MessageProcessor;
-
-interface Message {
-	messageType: string,
-	data: any
-}
-
-interface GameClientMapping {
-	[gameId: string]: Array<websocket.connection>
-}
 
 class MessageProcessor {
 	
@@ -20,21 +15,30 @@ class MessageProcessor {
 	private gameIdToClients: GameClientMapping;
 	
 	constructor() {
+		if (MessageProcessor.Instance) {
+			throw 'MessageProcessor is a singleton and has already been instantiated.  Use MessageProcessor.Instance instead.';
+		}
+		
 		this.gameIdToClients = {};
 	}
 	
-	processMessage(message: Message) {
+	processMessage(connection: Connection, message: Messages.Message) {
 		log('Recieved messageType "' + message.messageType + '"');
 		
 		if (message.messageType === 'join') {
-			
+			join(this.gameIdToClients, connection, message);
+		} else if (message.messageType === 'chat') {
+			chat(this.gameIdToClients, connection, message);
 		} else {
 			log('Unknown messageType "' + message.messageType + '"');
 		}
 	}
 	
-	removeClient(connection: websocket.connection) {
-		log('Client disconnected');
+	removeClient(connection: Connection) {
+		var game = this.gameIdToClients[connection.gameId];
+		if (game && game.indexOf(connection) !== -1) {
+			game.splice(game.indexOf(connection), 1); 
+		}
 	}
 }
 
