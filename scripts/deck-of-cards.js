@@ -229,6 +229,8 @@ var DeckOfCards;
     (function (ViewModel) {
         var PlayerInfoViewModel = (function () {
             function PlayerInfoViewModel() {
+                this.placement = function () {
+                };
             }
             return PlayerInfoViewModel;
         })();
