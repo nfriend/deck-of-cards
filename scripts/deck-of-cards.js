@@ -162,7 +162,7 @@ var DeckOfCards;
                     });
                     _this.messages.push({
                         name: 'Nathan',
-                        message: DeckOfCards.Utility.linkatize(_this.chatInput()),
+                        message: _this.prepareMessage(_this.chatInput()),
                         isMe: true
                     });
                     _this.chatHistory.push(_this.chatInput());
@@ -202,7 +202,7 @@ var DeckOfCards;
                 this.wss.on('receive', function (data) {
                     _this.messages.push({
                         name: 'Player',
-                        message: DeckOfCards.Utility.linkatize(data.data.message)
+                        message: _this.prepareMessage(data.data.message)
                     });
                 });
                 this.wss.connect();
@@ -211,6 +211,9 @@ var DeckOfCards;
             // performant than setting up a binding
             ChatViewModel.prototype.getSelectionStart = function () {
                 return $('#chat-input')[0].selectionStart;
+            };
+            ChatViewModel.prototype.prepareMessage = function (s) {
+                return DeckOfCards.Utility.emoticonize(DeckOfCards.Utility.linkatize(DeckOfCards.Utility.escapeHtml(s)));
             };
             return ChatViewModel;
         })();
@@ -334,40 +337,14 @@ ko.bindingHandlers.log = {
         DeckOfCards.log(value);
     }
 };
-ko.bindingHandlers.selectionStart = {
+ko.bindingHandlers.scrollDown = {
     init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var value = valueAccessor(), $element = $(element);
-        console.log('init');
-        if (!ko.isObservable) {
-            throw 'The parameter provided to the selectionStart binding should be an observable';
-        }
-        var ignoreNext = false;
-        // set dependency on this value;
+        var value = valueAccessor();
+        var $element = $(element);
         ko.unwrap(value);
-        $element.on('selectionchange', function () {
-            setTimeout(function () {
-                if (ignoreNext) {
-                    ignoreNext = false;
-                    return;
-                }
-                ignoreNext = true;
-                value($element[0].selectionStart);
-                console.log('changed to ' + valueAccessor()());
-            }, 0);
+        value.subscribe(function () {
+            $element.scrollTop(Number.MAX_VALUE);
         });
-        var onUpdate = function () {
-            if (ignoreNext) {
-                ignoreNext = false;
-                return;
-            }
-            ignoreNext = true;
-            $element[0].setSelectionRange(ko.unwrap(value), ko.unwrap(value));
-            console.log('changed in vm to ' + valueAccessor()());
-        };
-        value.subscribe(onUpdate);
-        if (!DeckOfCards.Utility.isNullOrUndefined(ko.unwrap(value))) {
-            onUpdate();
-        }
     }
 };
 var DeckOfCards;
@@ -400,9 +377,61 @@ var DeckOfCards;
         Utility.isString = isString;
         // from http://stackoverflow.com/a/4563827/1063392
         function linkatize(s) {
-            return s.replace(/(https?:\/\/[^\s]+)/gi, '<a href="$1" target="_blank">$1</a>');
+            return s.replace(/(https?:(?:&#x2f;|\/)(?:&#x2f;|\/)[^\s]+)/gi, '<a href="$1" target="_blank">$1</a>');
         }
         Utility.linkatize = linkatize;
+        // from http://stackoverflow.com/a/12034334/1063392
+        function escapeHtml(s) {
+            var entityMap = {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': '&quot;',
+                "'": '&#39;',
+                "/": '&#x2F;'
+            };
+            return String(s).replace(/[&<>"'\/]/g, function (s) {
+                return entityMap[s];
+            });
+        }
+        Utility.escapeHtml = escapeHtml;
+        var emoticonMap = {
+            ':)': '<i class="fa fa-smile-o">',
+            ':-)': '<i class="fa fa-smile-o">',
+            '(-:': '<i class="fa fa-smile-o">',
+            '(:': '<i class="fa fa-smile-o">',
+            ':(': '<i class="fa fa-frown-o">',
+            ':-(': '<i class="fa fa-frown-o">',
+            ')-:': '<i class="fa fa-frown-o">',
+            '):': '<i class="fa fa-frown-o">',
+            ':|': '<i class="fa fa-meh-o">',
+            ':-|': '<i class="fa fa-meh-o">',
+            '|-:': '<i class="fa fa-meh-o">',
+            '|:': '<i class="fa fa-meh-o">',
+            '[like]': '<i class="fa fa-thumbs-up">',
+            '[dislike]': '<i class="fa fa-thumbs-down">',
+            '[heart]': '<i class="fa fa-heart">',
+            '<3': '<i class="fa fa-heart">',
+            '&lt;3': '<i class="fa fa-heart">',
+            '[star]': '<i class="fa fa-star">',
+        };
+        var emoticonRegex = (function () {
+            var regex = Object.keys(emoticonMap).map(function (emoticon) {
+                return escapeRegExp(emoticon);
+            }).join('|');
+            return new RegExp('(' + regex + ')', 'g');
+        })();
+        function emoticonize(s) {
+            return String(s).replace(emoticonRegex, function (s) {
+                return emoticonMap[s];
+            });
+        }
+        Utility.emoticonize = emoticonize;
+        // from http://stackoverflow.com/a/6969486/1063392
+        function escapeRegExp(s) {
+            return s.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+        }
+        Utility.escapeRegExp = escapeRegExp;
     })(Utility = DeckOfCards.Utility || (DeckOfCards.Utility = {}));
 })(DeckOfCards || (DeckOfCards = {}));
 /// <reference path="loaders" />
@@ -411,7 +440,7 @@ var DeckOfCards;
 /// <reference path="./components" />
 /// <reference path="./customComponentLoader" />
 /// <reference path="./bindings/log-binding" />
-/// <reference path="./bindings/selectionStart-binding" />
+/// <reference path="./bindings/scrollDown-binding" />
 /// <reference path="./Key" />
 /// <reference path="./utility" />
 var DeckOfCards;

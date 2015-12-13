@@ -50,7 +50,7 @@ module DeckOfCards.ViewModel {
 			this.wss.on('receive', (data) => {
 				this.messages.push({
 					name: 'Player',
-					message: Utility.linkatize(data.data.message)
+					message: this.prepareMessage(data.data.message)
 				});
 			});
 			this.wss.connect();
@@ -92,7 +92,7 @@ module DeckOfCards.ViewModel {
 			
 			this.messages.push({
 				name: 'Nathan',
-				message: Utility.linkatize(this.chatInput()),
+				message: this.prepareMessage(this.chatInput()),
 				isMe: true
 			});
 			
@@ -108,6 +108,10 @@ module DeckOfCards.ViewModel {
 		// performant than setting up a binding
 		private getSelectionStart() {
 			return (<HTMLTextAreaElement>$('#chat-input')[0]).selectionStart;
+		}
+		
+		private prepareMessage(s: string): string {
+			return Utility.emoticonize(Utility.linkatize(Utility.escapeHtml(s)));
 		}
 	}
 }

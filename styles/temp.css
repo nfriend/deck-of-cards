@@ -48,6 +48,34 @@ chat .message-container .message-scroll-container .message {
 	overflow-wrap: break-word;
 }
 
+chat .message-container .message-scroll-container .message i.fa-smile-o {
+	color: green;
+}
+
+chat .message-container .message-scroll-container .message i.fa-frown-o {
+	color: blue;
+}
+
+chat .message-container .message-scroll-container .message i.fa-meh-o {
+	color: gray;
+}
+
+chat .message-container .message-scroll-container .message i.fa-heart {
+	color: red;
+}
+
+chat .message-container .message-scroll-container .message i.fa-thumbs-up {
+	color: blue;
+}
+
+chat .message-container .message-scroll-container .message i.fa-thumbs-down {
+	color: red;
+}
+
+chat .message-container .message-scroll-container .message i.fa-star {
+	color: #ffcc00;
+}
+
 chat .input-container {
 	padding-left: 10px;
 	padding-right: 10px;

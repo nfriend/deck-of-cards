@@ -1,8 +1,8 @@
 <div class="message-container">
-	<div class="message-scroll-container" data-bind="foreach: { data: messages }">
+	<div class="message-scroll-container" data-bind="foreach: { data: messages }, scrollDown: messages">
 		<div class="message">
 			<b data-bind="text: name + ': '"></b>
-			<span data-bind="html: message"></span>
+			<span style="white-space: pre" data-bind="html: message"></span>
 		</div>
 	</div>
 </div>
