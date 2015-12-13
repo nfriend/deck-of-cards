@@ -10,6 +10,10 @@ module DeckOfCards.Utility {
 		return false;
 	}
 	
+	export function isNullOrUndefined(o: any): boolean {
+		return isUndefined(o) || o === null;
+	}
+	
 	export function isUndefined(o: any): boolean {
 		return typeof o === 'undefined';
 	}
@@ -20,5 +24,10 @@ module DeckOfCards.Utility {
 	
 	export function isString(o: any): boolean {
 		return typeof o === 'string';
+	}
+	
+	// from http://stackoverflow.com/a/4563827/1063392
+	export function linkatize(s: string): string {
+		return s.replace( /(https?:\/\/[^\s]+)/gi , '<a href="$1" target="_blank">$1</a>' )
 	}
 }

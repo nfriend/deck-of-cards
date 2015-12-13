@@ -44,6 +44,10 @@ chat .message-container .message-scroll-container {
 	bottom: 0px;
 }
 
+chat .message-container .message-scroll-container .message {
+	overflow-wrap: break-word;
+}
+
 chat .input-container {
 	padding-left: 10px;
 	padding-right: 10px;

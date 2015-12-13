@@ -9,6 +9,8 @@ module DeckOfCards.ViewModel {
 	export class ChatViewModel {
 		messages: KnockoutObservableArray<ChatMessage> = ko.observableArray([])
 		chatInput: KnockoutObservable<string> = ko.observable(null);
+		chatHistory: Array<string> = [];
+		chatHistoryPointer: number;
 		
 		wss = new WebsocketService();
 		
@@ -48,7 +50,7 @@ module DeckOfCards.ViewModel {
 			this.wss.on('receive', (data) => {
 				this.messages.push({
 					name: 'Player',
-					message: data.data.message
+					message: Utility.linkatize(data.data.message)
 				});
 			});
 			this.wss.connect();
@@ -59,6 +61,14 @@ module DeckOfCards.ViewModel {
 				e.preventDefault();
 				this.send();
 				return false;
+			} else if (e.which === Key.UpArrow) {
+				if (this.chatHistoryPointer > 0 && this.getSelectionStart() === 0) {
+					this.chatInput(this.chatHistory[--this.chatHistoryPointer]);
+				}
+			} else if (e.which === Key.DownArrow) {
+				if (this.chatHistoryPointer < this.chatHistory.length - 1 && this.getSelectionStart() === this.chatInput().length) {
+					this.chatInput(this.chatHistory[++this.chatHistoryPointer]);
+				}
 			}
 			
 			return true;
@@ -82,10 +92,22 @@ module DeckOfCards.ViewModel {
 			
 			this.messages.push({
 				name: 'Nathan',
-				message: this.chatInput(),
+				message: Utility.linkatize(this.chatInput()),
 				isMe: true
-			})
+			});
+			
+			this.chatHistory.push(this.chatInput());
+			if (this.chatHistory.length > 50) {
+				this.chatHistory.shift();
+			}
+			this.chatHistoryPointer = this.chatHistory.length;
 			this.chatInput('');
+		}
+		
+		// not at all very Knockout-like, but it's much simpler and more
+		// performant than setting up a binding
+		private getSelectionStart() {
+			return (<HTMLTextAreaElement>$('#chat-input')[0]).selectionStart;
 		}
 	}
 }

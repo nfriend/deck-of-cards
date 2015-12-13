@@ -4,6 +4,7 @@
 /// <reference path="./components" />
 /// <reference path="./customComponentLoader" />
 /// <reference path="./bindings/log-binding" />
+/// <reference path="./bindings/selectionStart-binding" />
 /// <reference path="./Key" />
 /// <reference path="./utility" />
 

@@ -1,5 +1,17 @@
 var DeckOfCards;
 (function (DeckOfCards) {
+    (function (Key) {
+        Key[Key["Enter"] = 13] = "Enter";
+        Key[Key["Escape"] = 27] = "Escape";
+        Key[Key["UpArrow"] = 38] = "UpArrow";
+        Key[Key["DownArrow"] = 40] = "DownArrow";
+        Key[Key["LeftArrow"] = 37] = "LeftArrow";
+        Key[Key["RightArrow"] = 39] = "RightArrow";
+    })(DeckOfCards.Key || (DeckOfCards.Key = {}));
+    var Key = DeckOfCards.Key;
+})(DeckOfCards || (DeckOfCards = {}));
+var DeckOfCards;
+(function (DeckOfCards) {
     var WebsocketService = (function () {
         function WebsocketService() {
             var _this = this;
@@ -115,12 +127,23 @@ var DeckOfCards;
                 var _this = this;
                 this.messages = ko.observableArray([]);
                 this.chatInput = ko.observable(null);
+                this.chatHistory = [];
                 this.wss = new DeckOfCards.WebsocketService();
                 this.chatInputKeyDown = function (e) {
                     if (e.which === DeckOfCards.Key.Enter && !e.shiftKey) {
                         e.preventDefault();
                         _this.send();
                         return false;
+                    }
+                    else if (e.which === DeckOfCards.Key.UpArrow) {
+                        if (_this.chatHistoryPointer > 0 && _this.getSelectionStart() === 0) {
+                            _this.chatInput(_this.chatHistory[--_this.chatHistoryPointer]);
+                        }
+                    }
+                    else if (e.which === DeckOfCards.Key.DownArrow) {
+                        if (_this.chatHistoryPointer < _this.chatHistory.length - 1 && _this.getSelectionStart() === _this.chatInput().length) {
+                            _this.chatInput(_this.chatHistory[++_this.chatHistoryPointer]);
+                        }
                     }
                     return true;
                 };
@@ -139,9 +162,14 @@ var DeckOfCards;
                     });
                     _this.messages.push({
                         name: 'Nathan',
-                        message: _this.chatInput(),
+                        message: DeckOfCards.Utility.linkatize(_this.chatInput()),
                         isMe: true
                     });
+                    _this.chatHistory.push(_this.chatInput());
+                    if (_this.chatHistory.length > 50) {
+                        _this.chatHistory.shift();
+                    }
+                    _this.chatHistoryPointer = _this.chatHistory.length;
                     _this.chatInput('');
                 };
                 this.messages.push({
@@ -174,11 +202,16 @@ var DeckOfCards;
                 this.wss.on('receive', function (data) {
                     _this.messages.push({
                         name: 'Player',
-                        message: data.data.message
+                        message: DeckOfCards.Utility.linkatize(data.data.message)
                     });
                 });
                 this.wss.connect();
             }
+            // not at all very Knockout-like, but it's much simpler and more
+            // performant than setting up a binding
+            ChatViewModel.prototype.getSelectionStart = function () {
+                return $('#chat-input')[0].selectionStart;
+            };
             return ChatViewModel;
         })();
         ViewModel.ChatViewModel = ChatViewModel;
@@ -301,14 +334,42 @@ ko.bindingHandlers.log = {
         DeckOfCards.log(value);
     }
 };
-var DeckOfCards;
-(function (DeckOfCards) {
-    (function (Key) {
-        Key[Key["Enter"] = 13] = "Enter";
-        Key[Key["Escape"] = 27] = "Escape";
-    })(DeckOfCards.Key || (DeckOfCards.Key = {}));
-    var Key = DeckOfCards.Key;
-})(DeckOfCards || (DeckOfCards = {}));
+ko.bindingHandlers.selectionStart = {
+    init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        var value = valueAccessor(), $element = $(element);
+        console.log('init');
+        if (!ko.isObservable) {
+            throw 'The parameter provided to the selectionStart binding should be an observable';
+        }
+        var ignoreNext = false;
+        // set dependency on this value;
+        ko.unwrap(value);
+        $element.on('selectionchange', function () {
+            setTimeout(function () {
+                if (ignoreNext) {
+                    ignoreNext = false;
+                    return;
+                }
+                ignoreNext = true;
+                value($element[0].selectionStart);
+                console.log('changed to ' + valueAccessor()());
+            }, 0);
+        });
+        var onUpdate = function () {
+            if (ignoreNext) {
+                ignoreNext = false;
+                return;
+            }
+            ignoreNext = true;
+            $element[0].setSelectionRange(ko.unwrap(value), ko.unwrap(value));
+            console.log('changed in vm to ' + valueAccessor()());
+        };
+        value.subscribe(onUpdate);
+        if (!DeckOfCards.Utility.isNullOrUndefined(ko.unwrap(value))) {
+            onUpdate();
+        }
+    }
+};
 var DeckOfCards;
 (function (DeckOfCards) {
     var Utility;
@@ -321,6 +382,10 @@ var DeckOfCards;
             return false;
         }
         Utility.isNullUndefinedOrWhitespace = isNullUndefinedOrWhitespace;
+        function isNullOrUndefined(o) {
+            return isUndefined(o) || o === null;
+        }
+        Utility.isNullOrUndefined = isNullOrUndefined;
         function isUndefined(o) {
             return typeof o === 'undefined';
         }
@@ -333,6 +398,11 @@ var DeckOfCards;
             return typeof o === 'string';
         }
         Utility.isString = isString;
+        // from http://stackoverflow.com/a/4563827/1063392
+        function linkatize(s) {
+            return s.replace(/(https?:\/\/[^\s]+)/gi, '<a href="$1" target="_blank">$1</a>');
+        }
+        Utility.linkatize = linkatize;
     })(Utility = DeckOfCards.Utility || (DeckOfCards.Utility = {}));
 })(DeckOfCards || (DeckOfCards = {}));
 /// <reference path="loaders" />
@@ -341,6 +411,7 @@ var DeckOfCards;
 /// <reference path="./components" />
 /// <reference path="./customComponentLoader" />
 /// <reference path="./bindings/log-binding" />
+/// <reference path="./bindings/selectionStart-binding" />
 /// <reference path="./Key" />
 /// <reference path="./utility" />
 var DeckOfCards;
