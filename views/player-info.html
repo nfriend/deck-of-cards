@@ -1,0 +1,40 @@
+<div class="player-info-container">
+	<div class="player-name-input-container">
+		<input class="player-name-input form-control">
+	</div>
+	<button class="btn btn-default player-color-button form-control color-square-button" data-bind="popover: { 
+					options: { title: 'Choose your color', placement: 'bottom', container: 'body' },
+				 	template: 'color-picker-template',
+					data: $data }">
+		<div class="color-square red"></div>
+	</button>
+</div>
+
+<script type="text/html" id="color-picker-template">
+	<div class="color-picker-popover-container">
+		<button class="btn btn-default player-color-button color-square-button form-control">
+			<div class="color-square blue"></div>
+		</button>
+		<button class="btn btn-default player-color-button color-square-button form-control">
+			<div class="color-square green"></div>
+		</button>
+		<button class="btn btn-default player-color-button color-square-button form-control">
+			<div class="color-square light-blue"></div>
+		</button>
+		<button class="btn btn-default player-color-button color-square-button form-control">
+			<div class="color-square red"></div>
+		</button>
+		<button class="btn btn-default player-color-button color-square-button form-control">
+			<div class="color-square orange"></div>
+		</button>
+		<button class="btn btn-default player-color-button color-square-button form-control">
+			<div class="color-square purple"></div>
+		</button>
+		<button class="btn btn-default player-color-button color-square-button form-control">
+			<div class="color-square white"></div>
+		</button>
+		<button class="btn btn-default player-color-button color-square-button form-control">
+			<div class="color-square black"></div>
+		</button>
+	</div>
+</script>

@@ -1,0 +1,60 @@
+#sidebar-container {
+	position: absolute;
+	background: white;
+	height: 100%;
+	right: 0;
+	
+	#player-info-container {
+		position: absolute; 
+		height: 18%; 
+		width: 100%; 
+		top: 0;
+	}
+	
+	#chat-container {
+		position: absolute; 
+		height: 78%; 
+		width: 100%; 
+		top: 20%
+	}
+	
+	.divider {
+		position: absolute;
+		height: 4%;
+		width: 100%;
+		
+		hr {
+			margin-top: 12px;
+		}
+	}
+}
+
+@media (max-width: @screen-xs-max) { 
+	#sidebar-container {
+		width: 0%;
+	}
+}
+
+@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+	#sidebar-container {
+		width: 25%;
+	}
+ }
+ 
+@media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
+	#sidebar-container {
+		width: 23%;
+	}
+ }
+ 
+@media (min-width: @screen-lg-min) and (max-width: @screen-lg-max) { 
+	#sidebar-container {
+		width: 18%;
+	}
+}
+
+@media (min-width: @screen-xl-min) { 
+	#sidebar-container {
+		width: 11%;
+	}
+}

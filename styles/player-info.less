@@ -1,0 +1,66 @@
+playerinfo {
+	.player-info-container {
+		padding: 5px;
+		
+		.player-name-input-container {
+			position: absolute;
+			width: 100%;
+			float: left;
+			padding-right: 50px;
+		}
+		
+		.player-color-button {
+			float: right;
+		}
+	}
+}
+
+.color-picker-popover-container {
+	width: 148px;
+	text-align: center;
+}
+
+.color-square-button {
+	width: 34px;
+	padding: 4px;
+	margin-bottom: 4px;
+	
+	.color-square {
+		border-radius: 4px;
+		position: relative;
+		width: 100%;
+		height: 100%;
+		
+		&.red {
+			background-color: @brand-danger;
+		}
+		
+		&.blue {
+			background-color: @brand-primary;
+		}
+		
+		&.light-blue {
+			background-color: @brand-info;
+		}
+		
+		&.green {
+			background-color: @brand-success;
+		}
+		
+		&.orange {
+			background-color: @brand-warning;
+		}
+		
+		&.white {
+			background-color: @gray-lighter;
+		}
+		
+		&.black {
+			background-color: @gray-dark;
+		}
+		
+		&.purple {
+			background-color: @brand-purple;
+		}
+	}		
+}

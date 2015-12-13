@@ -1,0 +1,49 @@
+chat {
+	float: right;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	
+	.message-container {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		padding-top: 10px;
+		padding-left: 10px;
+		padding-bottom: 170px;
+		bottom: 0px;
+		
+		.message-scroll-container {
+			overflow-y: scroll;
+			height: 100%;
+			bottom: 0px;
+			
+			.message {
+				overflow-wrap: break-word;
+				
+				i {
+					&.fa-smile-o { color: green; }
+					&.fa-frown-o { color: blue; }
+					&.fa-meh-o { color: gray; }
+					&.fa-heart { color: red; }
+					&.fa-thumbs-up { color: blue; }
+					&.fa-thumbs-down { color: red; }
+					&.fa-star { color: #ffcc00; }
+				}
+			}
+		}
+	}
+	
+	.input-container {
+		padding-left: 10px;
+		padding-right: 10px;
+		position: absolute;
+		bottom: 10px;
+		width: 100%;
+		
+		#chat-input {
+			resize: none;
+			margin-bottom: 5px;		
+		}	
+	}
+}

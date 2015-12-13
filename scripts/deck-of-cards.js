@@ -223,12 +223,29 @@ var DeckOfCards;
         ViewModel.ChatViewModel = ChatViewModel;
     })(ViewModel = DeckOfCards.ViewModel || (DeckOfCards.ViewModel = {}));
 })(DeckOfCards || (DeckOfCards = {}));
+var DeckOfCards;
+(function (DeckOfCards) {
+    var ViewModel;
+    (function (ViewModel) {
+        var PlayerInfoViewModel = (function () {
+            function PlayerInfoViewModel() {
+            }
+            return PlayerInfoViewModel;
+        })();
+        ViewModel.PlayerInfoViewModel = PlayerInfoViewModel;
+    })(ViewModel = DeckOfCards.ViewModel || (DeckOfCards.ViewModel = {}));
+})(DeckOfCards || (DeckOfCards = {}));
 /// <reference path="./viewModel/ChatViewModel" />
+/// <reference path="./viewModel/PlayerInfoViewModel" />
 var DeckOfCards;
 (function (DeckOfCards) {
     ko.components.register('chat', {
         template: { url: './views/chat.html' },
         viewModel: DeckOfCards.ViewModel.ChatViewModel
+    });
+    ko.components.register('playerinfo', {
+        template: { url: './views/player-info.html' },
+        viewModel: DeckOfCards.ViewModel.PlayerInfoViewModel
     });
 })(DeckOfCards || (DeckOfCards = {}));
 (function () {

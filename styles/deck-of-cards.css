@@ -1,0 +1,177 @@
+body,
+html {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+body {
+  background-image: url('../images/wood.jpg');
+}
+#board-container {
+  float: left;
+  left: 0;
+  width: 80%;
+}
+chat {
+  float: right;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+chat .message-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-bottom: 170px;
+  bottom: 0px;
+}
+chat .message-container .message-scroll-container {
+  overflow-y: scroll;
+  height: 100%;
+  bottom: 0px;
+}
+chat .message-container .message-scroll-container .message {
+  overflow-wrap: break-word;
+}
+chat .message-container .message-scroll-container .message i.fa-smile-o {
+  color: green;
+}
+chat .message-container .message-scroll-container .message i.fa-frown-o {
+  color: blue;
+}
+chat .message-container .message-scroll-container .message i.fa-meh-o {
+  color: gray;
+}
+chat .message-container .message-scroll-container .message i.fa-heart {
+  color: red;
+}
+chat .message-container .message-scroll-container .message i.fa-thumbs-up {
+  color: blue;
+}
+chat .message-container .message-scroll-container .message i.fa-thumbs-down {
+  color: red;
+}
+chat .message-container .message-scroll-container .message i.fa-star {
+  color: #ffcc00;
+}
+chat .input-container {
+  padding-left: 10px;
+  padding-right: 10px;
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+}
+chat .input-container #chat-input {
+  resize: none;
+  margin-bottom: 5px;
+}
+#sidebar-container {
+  position: absolute;
+  background: white;
+  height: 100%;
+  right: 0;
+}
+#sidebar-container #player-info-container {
+  position: absolute;
+  height: 18%;
+  width: 100%;
+  top: 0;
+}
+#sidebar-container #chat-container {
+  position: absolute;
+  height: 78%;
+  width: 100%;
+  top: 20%;
+}
+#sidebar-container .divider {
+  position: absolute;
+  height: 4%;
+  width: 100%;
+}
+#sidebar-container .divider hr {
+  margin-top: 12px;
+}
+@media (max-width: 767px) {
+  #sidebar-container {
+    width: 0%;
+  }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  #sidebar-container {
+    width: 25%;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  #sidebar-container {
+    width: 23%;
+  }
+}
+@media (min-width: 1200px) and (max-width: 1899px) {
+  #sidebar-container {
+    width: 18%;
+  }
+}
+@media (min-width: 1900px) {
+  #sidebar-container {
+    width: 11%;
+  }
+}
+playerinfo .player-info-container {
+  padding: 5px;
+}
+playerinfo .player-info-container .player-name-input-container {
+  position: absolute;
+  width: 100%;
+  float: left;
+  padding-right: 50px;
+}
+playerinfo .player-info-container .player-color-button {
+  float: right;
+}
+.color-picker-popover-container {
+  width: 148px;
+  text-align: center;
+}
+.color-square-button {
+  width: 34px;
+  padding: 4px;
+  margin-bottom: 4px;
+}
+.color-square-button .color-square {
+  border-radius: 4px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.color-square-button .color-square.red {
+  background-color: #d9534f;
+}
+.color-square-button .color-square.blue {
+  background-color: #337ab7;
+}
+.color-square-button .color-square.light-blue {
+  background-color: #5bc0de;
+}
+.color-square-button .color-square.green {
+  background-color: #5cb85c;
+}
+.color-square-button .color-square.orange {
+  background-color: #f0ad4e;
+}
+.color-square-button .color-square.white {
+  background-color: #eeeeee;
+}
+.color-square-button .color-square.black {
+  background-color: #333333;
+}
+.color-square-button .color-square.purple {
+  background-color: #b73390;
+}
