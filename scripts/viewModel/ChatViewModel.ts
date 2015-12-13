@@ -11,6 +11,7 @@ module DeckOfCards.ViewModel {
 		chatInput: KnockoutObservable<string> = ko.observable(null);
 		chatHistory: Array<string> = [];
 		chatHistoryPointer: number;
+		pop: HTMLAudioElement;
 		
 		wss = new WebsocketService();
 		
@@ -48,12 +49,16 @@ module DeckOfCards.ViewModel {
 				});
 			})
 			this.wss.on('receive', (data) => {
+				this.pop.play();
 				this.messages.push({
 					name: 'Player',
 					message: this.prepareMessage(data.data.message)
 				});
 			});
 			this.wss.connect();
+			
+			this.pop = new Audio('./audio/pop.mp3');
+			this.pop.volume = .2;
 		}
 		
 		chatInputKeyDown = (e: KeyboardEvent) => {

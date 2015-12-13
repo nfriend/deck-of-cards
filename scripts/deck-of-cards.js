@@ -200,12 +200,15 @@ var DeckOfCards;
                     });
                 });
                 this.wss.on('receive', function (data) {
+                    _this.pop.play();
                     _this.messages.push({
                         name: 'Player',
                         message: _this.prepareMessage(data.data.message)
                     });
                 });
                 this.wss.connect();
+                this.pop = new Audio('./audio/pop.mp3');
+                this.pop.volume = .2;
             }
             // not at all very Knockout-like, but it's much simpler and more
             // performant than setting up a binding
