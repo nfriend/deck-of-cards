@@ -1,5 +1,3 @@
-/// <refernce
-
 module DeckOfCards.ViewModel {
 	
 	interface ChatMessage {
@@ -11,6 +9,8 @@ module DeckOfCards.ViewModel {
 	export class ChatViewModel {
 		messages: KnockoutObservableArray<ChatMessage> = ko.observableArray([])
 		chatInput: KnockoutObservable<string> = ko.observable(null);
+		
+		wss = new WebsocketService();
 		
 		constructor() {
 			this.messages.push({
@@ -34,6 +34,24 @@ module DeckOfCards.ViewModel {
 				message: 'Hey, this is pretty neat!',
 				isMe: true
 			});
+			
+			//temporary
+			
+			this.wss.on('connect', () => {
+				this.wss.send({
+					messageType: 'join',
+					data: {
+						id: 'abc'
+					}
+				});
+			})
+			this.wss.on('receive', (data) => {
+				this.messages.push({
+					name: 'Player',
+					message: data.data.message
+				});
+			});
+			this.wss.connect();
 		}
 		
 		chatInputKeyDown = (e: KeyboardEvent) => {
@@ -54,6 +72,13 @@ module DeckOfCards.ViewModel {
 			if (this.sendIsDisabled()) {
 				return;
 			}
+			
+			this.wss.send({
+				messageType: 'chat',
+				data: {
+					message: this.chatInput()
+				}
+			});
 			
 			this.messages.push({
 				name: 'Nathan',

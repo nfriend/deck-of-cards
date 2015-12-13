@@ -106,7 +106,6 @@ var DeckOfCards;
     })();
     DeckOfCards.WebsocketService = WebsocketService;
 })(DeckOfCards || (DeckOfCards = {}));
-/// <refernce
 var DeckOfCards;
 (function (DeckOfCards) {
     var ViewModel;
@@ -116,6 +115,7 @@ var DeckOfCards;
                 var _this = this;
                 this.messages = ko.observableArray([]);
                 this.chatInput = ko.observable(null);
+                this.wss = new DeckOfCards.WebsocketService();
                 this.chatInputKeyDown = function (e) {
                     if (e.which === DeckOfCards.Key.Enter && !e.shiftKey) {
                         e.preventDefault();
@@ -131,6 +131,12 @@ var DeckOfCards;
                     if (_this.sendIsDisabled()) {
                         return;
                     }
+                    _this.wss.send({
+                        messageType: 'chat',
+                        data: {
+                            message: _this.chatInput()
+                        }
+                    });
                     _this.messages.push({
                         name: 'Nathan',
                         message: _this.chatInput(),
@@ -156,6 +162,22 @@ var DeckOfCards;
                     message: 'Hey, this is pretty neat!',
                     isMe: true
                 });
+                //temporary
+                this.wss.on('connect', function () {
+                    _this.wss.send({
+                        messageType: 'join',
+                        data: {
+                            id: 'abc'
+                        }
+                    });
+                });
+                this.wss.on('receive', function (data) {
+                    _this.messages.push({
+                        name: 'Player',
+                        message: data.data.message
+                    });
+                });
+                this.wss.connect();
             }
             return ChatViewModel;
         })();
