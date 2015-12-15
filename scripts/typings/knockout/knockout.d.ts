@@ -389,6 +389,12 @@ interface KnockoutTemplateEngine extends KnockoutNativeTemplateEngine {
 /////////////////////////////////
 
 interface KnockoutStatic {
+    
+    // custom
+    options: {
+        deferUpdates: boolean;
+    }
+    
     utils: KnockoutUtils;
     memoization: KnockoutMemoization;
 

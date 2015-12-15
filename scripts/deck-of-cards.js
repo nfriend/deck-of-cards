@@ -163,6 +163,7 @@ var DeckOfCards;
                     _this.messages.push({
                         name: 'Nathan',
                         message: _this.prepareMessage(_this.chatInput()),
+                        color: 'red',
                         isMe: true
                     });
                     _this.chatHistory.push(_this.chatInput());
@@ -175,19 +176,23 @@ var DeckOfCards;
                 this.messages.push({
                     name: 'Nathan',
                     message: 'Hey, this is pretty neat!',
+                    color: 'red',
                     isMe: true
                 });
                 this.messages.push({
                     name: 'Derek',
-                    message: 'Yeah it is.'
+                    message: 'Yeah it is.',
+                    color: 'blue'
                 });
                 this.messages.push({
                     name: 'Emily',
-                    message: 'Cool.'
+                    message: 'Cool.',
+                    color: 'green'
                 });
                 this.messages.push({
                     name: 'Nathan',
                     message: 'Hey, this is pretty neat!',
+                    color: 'red',
                     isMe: true
                 });
                 //temporary
@@ -203,7 +208,8 @@ var DeckOfCards;
                     _this.pop.play();
                     _this.messages.push({
                         name: 'Player',
-                        message: _this.prepareMessage(data.data.message)
+                        message: _this.prepareMessage(data.data.message),
+                        color: 'purple'
                     });
                 });
                 this.wss.connect();
@@ -369,6 +375,79 @@ ko.bindingHandlers.scrollDown = {
         });
     }
 };
+/// <reference path="../log" />
+var HeightType;
+(function (HeightType) {
+    HeightType[HeightType["Pixel"] = 0] = "Pixel";
+    HeightType[HeightType["Percentage"] = 1] = "Percentage";
+})(HeightType || (HeightType = {}));
+ko.bindingHandlers.verticalArrangement = {
+    init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        var $element = $(element);
+        function arrange() {
+            var $children = $element.children(), totalHeight = $element.innerHeight(), totalPxRequested = 0, totalStarRequested = 0;
+            var sizes = $.map($children, function (child) {
+                var $child = $(child), attrValue = $child.attr('vertical-arrangement-height');
+                if (!DeckOfCards.Utility.isNullOrUndefined(attrValue)) {
+                    if (/px/gi.test(attrValue)) {
+                        var px = parseFloat(attrValue.replace(/px/gi, ''));
+                        totalPxRequested += px;
+                        return { type: HeightType.Pixel, value: px };
+                    }
+                    else if (attrValue.indexOf('*') !== -1) {
+                        var star = parseFloat(attrValue.replace('*', ''));
+                        totalStarRequested += star;
+                        return { type: HeightType.Percentage, value: star };
+                    }
+                    else {
+                        DeckOfCards.log('unrecognized value for "vertical-arrangement-height" attribute: "' + attrValue + '"');
+                        totalStarRequested += 1;
+                        return { type: HeightType.Percentage, value: 1 };
+                    }
+                }
+                else {
+                    totalStarRequested += 1;
+                    return { type: HeightType.Percentage, value: 1 };
+                }
+            });
+            var top = 0;
+            $children.each(function (i, child) {
+                if (sizes[i].type === HeightType.Pixel) {
+                    var pxValue = sizes[i].value;
+                    $(child).css({
+                        position: 'absolute',
+                        height: pxValue + 'px',
+                        width: '100%',
+                        top: top + 'px'
+                    });
+                    top += pxValue;
+                }
+                else {
+                    var pxValue = ((totalHeight - totalPxRequested) / totalStarRequested) * sizes[i].value;
+                    $(child).css({
+                        position: 'absolute',
+                        height: pxValue + 'px',
+                        width: '100%',
+                        top: top + 'px'
+                    });
+                    top += pxValue;
+                }
+            });
+        }
+        var elementHeight = ko.observable($element.innerHeight());
+        elementHeight.extend({ rateLimit: { timeout: 50, method: 'notifyWhenChangesStop' } });
+        $(window).on('resize', function () {
+            if ($element.innerHeight() !== elementHeight()) {
+                elementHeight($element.innerHeight());
+            }
+        });
+        elementHeight.subscribe(arrange);
+        arrange();
+        ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+            $(window).off('resize', arrange);
+        });
+    }
+};
 var DeckOfCards;
 (function (DeckOfCards) {
     var Utility;
@@ -463,6 +542,7 @@ var DeckOfCards;
 /// <reference path="./customComponentLoader" />
 /// <reference path="./bindings/log-binding" />
 /// <reference path="./bindings/scrollDown-binding" />
+/// <reference path="./bindings/verticalArrangement-binding" />
 /// <reference path="./Key" />
 /// <reference path="./utility" />
 var DeckOfCards;
@@ -483,6 +563,7 @@ var DeckOfCards;
     function render() {
         renderer.render(scene, camera);
     }
+    ko.options.deferUpdates = true;
     ko.applyBindings(new DeckOfCards.ViewModel.DeckOfCardsViewModel());
 })(DeckOfCards || (DeckOfCards = {}));
 var DeckOfCards;

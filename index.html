@@ -25,14 +25,14 @@
 
 <body>
     <div id="board-container"></div>
-    <div id="sidebar-container">
-        <div id="player-info-container">
+    <div id="sidebar-container" data-bind="verticalArrangement: true">
+        <div id="player-info-container" vertical-arrangement-height="45px">
             <playerinfo></playerinfo>
         </div>
-        <div class="divider" style="top: 18%;">
+        <div class="divider" vertical-arrangement-height="0px">
             <hr />
         </div>
-        <div id="chat-container">
+        <div id="chat-container" vertical-arrangement-height="1*">
             <chat></chat>
         </div>
     </div>

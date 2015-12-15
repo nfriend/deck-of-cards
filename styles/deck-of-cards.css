@@ -1,9 +1,42 @@
+.red {
+  background-color: #d9534f;
+  color: #d9534f;
+}
+.blue {
+  background-color: #337ab7;
+  color: #337ab7;
+}
+.light-blue {
+  background-color: #5bc0de;
+  color: #5bc0de;
+}
+.green {
+  background-color: #5cb85c;
+  color: #5cb85c;
+}
+.orange {
+  background-color: #f0ad4e;
+  color: #f0ad4e;
+}
+.white {
+  background-color: #eeeeee;
+  color: #eeeeee;
+}
+.black {
+  background-color: #333333;
+  color: #333333;
+}
+.purple {
+  background-color: #b73390;
+  color: #b73390;
+}
 body,
 html {
   position: absolute;
   height: 100%;
   width: 100%;
   margin: 0;
+  overflow: hidden;
 }
 canvas {
   width: 100%;
@@ -62,6 +95,14 @@ chat .message-container .message-scroll-container .message i.fa-thumbs-down {
 chat .message-container .message-scroll-container .message i.fa-star {
   color: #ffcc00;
 }
+chat .message-container .message-scroll-container .message i.fa-circle {
+  font-size: .8em;
+  display: block;
+  float: left;
+  margin-top: 5px;
+  margin-right: 4px;
+  background: none;
+}
 chat .input-container {
   padding-left: 10px;
   padding-right: 10px;
@@ -78,26 +119,10 @@ chat .input-container #chat-input {
   background: white;
   height: 100%;
   right: 0;
-}
-#sidebar-container #player-info-container {
-  position: absolute;
-  height: 18%;
-  width: 100%;
-  top: 0;
-}
-#sidebar-container #chat-container {
-  position: absolute;
-  height: 78%;
-  width: 100%;
-  top: 20%;
-}
-#sidebar-container .divider {
-  position: absolute;
-  height: 4%;
-  width: 100%;
+  overflow: hidden;
 }
 #sidebar-container .divider hr {
-  margin-top: 12px;
+  margin-top: 0px;
 }
 @media (max-width: 767px) {
   #sidebar-container {
@@ -150,28 +175,4 @@ playerinfo .player-info-container .player-color-button {
   position: relative;
   width: 100%;
   height: 100%;
-}
-.color-square-button .color-square.red {
-  background-color: #d9534f;
-}
-.color-square-button .color-square.blue {
-  background-color: #337ab7;
-}
-.color-square-button .color-square.light-blue {
-  background-color: #5bc0de;
-}
-.color-square-button .color-square.green {
-  background-color: #5cb85c;
-}
-.color-square-button .color-square.orange {
-  background-color: #f0ad4e;
-}
-.color-square-button .color-square.white {
-  background-color: #eeeeee;
-}
-.color-square-button .color-square.black {
-  background-color: #333333;
-}
-.color-square-button .color-square.purple {
-  background-color: #b73390;
 }

@@ -5,6 +5,7 @@
 /// <reference path="./customComponentLoader" />
 /// <reference path="./bindings/log-binding" />
 /// <reference path="./bindings/scrollDown-binding" />
+/// <reference path="./bindings/verticalArrangement-binding" />
 /// <reference path="./Key" />
 /// <reference path="./utility" />
 
@@ -31,5 +32,6 @@ module DeckOfCards {
 		renderer.render(scene, camera);
 	}
 	
+	ko.options.deferUpdates = true;
 	ko.applyBindings(new ViewModel.DeckOfCardsViewModel());
 }

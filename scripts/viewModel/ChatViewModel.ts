@@ -3,6 +3,7 @@ module DeckOfCards.ViewModel {
 	interface ChatMessage {
 		name: string;
 		message: string;
+		color: string,
 		isMe?: boolean;
 	}
 	
@@ -19,22 +20,26 @@ module DeckOfCards.ViewModel {
 			this.messages.push({
 				name: 'Nathan',
 				message: 'Hey, this is pretty neat!',
+				color: 'red',
 				isMe: true
 			});
 			
 			this.messages.push({
 				name: 'Derek',
-				message: 'Yeah it is.'
+				message: 'Yeah it is.',
+				color: 'blue'
 			});
 			
 			this.messages.push({
 				name: 'Emily',
-				message: 'Cool.'
+				message: 'Cool.',
+				color: 'green'
 			});
 			
 			this.messages.push({
 				name: 'Nathan',
 				message: 'Hey, this is pretty neat!',
+				color: 'red',
 				isMe: true
 			});
 			
@@ -52,7 +57,8 @@ module DeckOfCards.ViewModel {
 				this.pop.play();
 				this.messages.push({
 					name: 'Player',
-					message: this.prepareMessage(data.data.message)
+					message: this.prepareMessage(data.data.message),
+					color: 'purple'
 				});
 			});
 			this.wss.connect();
@@ -98,6 +104,7 @@ module DeckOfCards.ViewModel {
 			this.messages.push({
 				name: 'Nathan',
 				message: this.prepareMessage(this.chatInput()),
+				color: 'red',
 				isMe: true
 			});
 			
