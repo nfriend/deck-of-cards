@@ -29,10 +29,10 @@ wsServer.on('request', request => {
 		return;
 	}
 
-	var connection: Connection = request.accept('deck-of-cards-protocol', request.origin);
+	var connection: Connection = new Connection(request.accept('deck-of-cards-protocol', request.origin));
 	log('Connection accepted.');
 
-	connection.on('message', message => {
+	connection.websocketConnection.on('message', message => {
 		if (message.type === 'utf8') {
 			log('Received Message: ' + message.utf8Data);
 			var parsedMessage = JSON.parse(message.utf8Data);
@@ -42,7 +42,7 @@ wsServer.on('request', request => {
 		}
 	});
 
-	connection.on('close', (reasonCode, description) => {
+	connection.websocketConnection.on('close', (reasonCode, description) => {
 		MessageProcessor.Instance.removeClient(connection);
 	});
 });

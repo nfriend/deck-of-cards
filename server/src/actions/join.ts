@@ -1,19 +1,33 @@
 import Connection = require('../Connection');
 import Messages = require('../Messages');
-import GameClientMapping = require('../GameClientMapping');
+import GameIdToGame = require('../GameIdToGame');
 import log = require('../log');
 
 export = join;
 
-function join(gameIdToClients: GameClientMapping, connection: Connection, message: Messages.JoinMessage) {
-	
+function join(gameIdToGames: GameIdToGame, connection: Connection, message: Messages.JoinMessage) {
+
 	let gameId = message.data.id;
+	let playerId = message.data.playerId;
 	
-	if (!gameIdToClients[gameId]) {
-		gameIdToClients[gameId] = [];
+
+	if (!gameIdToGames[gameId]) {
+		gameIdToGames[gameId] = {
+			id: gameId,
+			chatHistory: [],
+			connections: []
+		};
 	}
-	
+
 	connection.gameId = gameId;
-	
-	gameIdToClients[gameId].push(connection);
+	gameIdToGames[gameId].connections.push(connection);
+
+	if (gameIdToGames[gameId].chatHistory.length > 0) {
+		connection.sendMessage({
+			messageType: 'chatHistory',
+			data: {
+				messages: gameIdToGames[gameId].chatHistory
+			}
+		});
+	}
 }

@@ -118,6 +118,7 @@ var DeckOfCards;
     })();
     DeckOfCards.WebsocketService = WebsocketService;
 })(DeckOfCards || (DeckOfCards = {}));
+/// <reference path="../typings/deck-of-cards-server/Messages" />
 var DeckOfCards;
 (function (DeckOfCards) {
     var ViewModel;
@@ -204,13 +205,24 @@ var DeckOfCards;
                         }
                     });
                 });
-                this.wss.on('receive', function (data) {
-                    _this.pop.play();
-                    _this.messages.push({
-                        name: 'Player',
-                        message: _this.prepareMessage(data.data.message),
-                        color: 'purple'
-                    });
+                this.wss.on('receive', function (wsMessage) {
+                    if (wsMessage.messageType === 'chat') {
+                        _this.pop.play();
+                        _this.messages.push({
+                            name: 'Player',
+                            message: _this.prepareMessage(wsMessage.data.message),
+                            color: 'purple'
+                        });
+                    }
+                    else if (wsMessage.messageType === 'chatHistory') {
+                        wsMessage.data.messages.forEach(function (message) {
+                            _this.messages.push({
+                                name: 'History',
+                                message: _this.prepareMessage(message.data.message),
+                                color: 'black'
+                            });
+                        });
+                    }
                 });
                 this.wss.connect();
                 this.pop = new Audio('./audio/pop.mp3');
@@ -533,6 +545,14 @@ var DeckOfCards;
             return s.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
         }
         Utility.escapeRegExp = escapeRegExp;
+        // from http://stackoverflow.com/a/2117523/1063392
+        function newGuid() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+        Utility.newGuid = newGuid;
     })(Utility = DeckOfCards.Utility || (DeckOfCards.Utility = {}));
 })(DeckOfCards || (DeckOfCards = {}));
 /// <reference path="loaders" />
@@ -547,24 +567,43 @@ var DeckOfCards;
 /// <reference path="./utility" />
 var DeckOfCards;
 (function (DeckOfCards) {
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 1, 5000);
-    var raycaster = new THREE.Raycaster();
-    var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    $('#board-container').append(renderer.domElement);
-    var light = new THREE.DirectionalLight(0xffffff);
-    light.position.set(0, 1, 1).normalize();
-    scene.add(light);
-    function animate() {
-        requestAnimationFrame(animate);
-        render();
+    init();
+    function init() {
+        drawScene();
+        setUpPlayerInfo();
+        startKnockout();
     }
-    function render() {
-        renderer.render(scene, camera);
+    function drawScene() {
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 1, 5000);
+        var raycaster = new THREE.Raycaster();
+        var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        $('#board-container').append(renderer.domElement);
+        var light = new THREE.DirectionalLight(0xffffff);
+        light.position.set(0, 1, 1).normalize();
+        scene.add(light);
+        function animate() {
+            requestAnimationFrame(animate);
+            render();
+        }
+        function render() {
+            renderer.render(scene, camera);
+        }
     }
-    ko.options.deferUpdates = true;
-    ko.applyBindings(new DeckOfCards.ViewModel.DeckOfCardsViewModel());
+    function setUpPlayerInfo() {
+        Globals.playerId = Cookies.get('playerId') || DeckOfCards.Utility.newGuid();
+        Globals.playerName = Cookies.get('playerName') || 'Player';
+        Globals.playerColor = Cookies.get('playerColor') || 'red';
+        var cookieSettings = { expires: 365, path: '/' };
+        Cookies.set('playerId', Globals.playerId, cookieSettings);
+        Cookies.set('playerName', Globals.playerName, cookieSettings);
+        Cookies.set('playerColor', Globals.playerColor, cookieSettings);
+    }
+    function startKnockout() {
+        ko.options.deferUpdates = true;
+        ko.applyBindings(new DeckOfCards.ViewModel.DeckOfCardsViewModel());
+    }
 })(DeckOfCards || (DeckOfCards = {}));
 var DeckOfCards;
 (function (DeckOfCards) {

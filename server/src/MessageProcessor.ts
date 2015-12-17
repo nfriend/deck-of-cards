@@ -3,7 +3,7 @@
 import Connection = require('./Connection');
 import log = require('./log');
 import Messages = require('./Messages');
-import GameClientMapping = require('./GameClientMapping');
+import GameClientMapping = require('./GameIdToGame');
 import chat = require('./actions/chat');
 import join = require('./actions/join');
 
@@ -36,8 +36,8 @@ class MessageProcessor {
 	
 	removeClient(connection: Connection) {
 		var game = this.gameIdToClients[connection.gameId];
-		if (game && game.indexOf(connection) !== -1) {
-			game.splice(game.indexOf(connection), 1); 
+		if (game && game.connections.indexOf(connection) !== -1) {
+			game.connections.splice(game.connections.indexOf(connection), 1); 
 		}
 	}
 }

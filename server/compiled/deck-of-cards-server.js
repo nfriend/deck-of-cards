@@ -4,6 +4,7 @@ var http = require('http');
 var Utility = require('./Utility');
 var MessageProcessor = require('./MessageProcessor');
 var log = require('./log');
+var Connection = require('./Connection');
 var WebSocketServer = websocket.server;
 var server = http.createServer(function (request, response) {
     log('Received request for ' + request.url);
@@ -23,9 +24,9 @@ wsServer.on('request', function (request) {
         log('Connection from origin ' + request.origin + ' rejected.');
         return;
     }
-    var connection = request.accept('deck-of-cards-protocol', request.origin);
+    var connection = new Connection(request.accept('deck-of-cards-protocol', request.origin));
     log('Connection accepted.');
-    connection.on('message', function (message) {
+    connection.websocketConnection.on('message', function (message) {
         if (message.type === 'utf8') {
             log('Received Message: ' + message.utf8Data);
             var parsedMessage = JSON.parse(message.utf8Data);
@@ -35,7 +36,7 @@ wsServer.on('request', function (request) {
             log('Recieved unsupported message type: "' + message.type + '". Message ignored.');
         }
     });
-    connection.on('close', function (reasonCode, description) {
+    connection.websocketConnection.on('close', function (reasonCode, description) {
         MessageProcessor.Instance.removeClient(connection);
     });
 });

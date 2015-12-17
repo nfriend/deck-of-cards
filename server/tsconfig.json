@@ -4,6 +4,7 @@
 		"sourceMap": true,
 		"watch": true,
 		"module": "commonjs",
-		"outDir": "./compiled"
+		"outDir": "./compiled",
+		"declaration": true
 	}
 }
