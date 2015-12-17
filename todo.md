@@ -7,3 +7,4 @@ TODO
 - Client needs an initialization message after it sends a "join" message
 - ChatViewModel is currently not compiling due to the changes in the chatting process
 - ChatViewModel needs to be refactored to properly use a global websocketservice.
+- What happens to chat messages once the player leaves disconnects?
