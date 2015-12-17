@@ -20,6 +20,14 @@ function join(gameIdToGames: GameIdToGame, connection: Connection, message: Mess
 	}
 
 	connection.gameId = gameId;
+	connection.player = {
+		id: message.data.playerId,
+		name: message.data.playerName,
+		color: message.data.playerColor,
+		connection: connection,
+		game: gameIdToGames[gameId]
+	}
+	
 	gameIdToGames[gameId].connections.push(connection);
 
 	if (gameIdToGames[gameId].chatHistory.length > 0) {
