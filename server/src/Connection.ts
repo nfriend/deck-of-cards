@@ -14,7 +14,13 @@ class Connection {
 		this.websocketConnection = connection;
 	}
 	
-	sendMessage(message: Message.JoinMessage|Message.ChatMessage|Message.ChatHistoryMessage) {
+	sendMessage(
+        message: Message.JoinMessage
+        |Message.ChatMessage
+        |Message.ChatHistoryMessage
+        |Message.UpdatePlayersMessage
+        |Message.UpdateMyPlayerInfoMessage) {
+            
 		this.websocketConnection.sendUTF(JSON.stringify(message));
 	}
 }

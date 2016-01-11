@@ -1,9 +1,10 @@
 module DeckOfCards {
 	export interface Player {
-		id: number;
-		name: string;
-		orientation: number;
-	}
+        id: string;
+        name: string;
+        color: string;
+        orientation: number;
+    }
 	
 	export enum Suit {
 		Hearts, Diamons, Spades, Clubs

@@ -1,5 +1,6 @@
 import Connection = require('./Connection');
 import Message = require('./Messages');
+import Game = require('./Game');
 
 export = Player;
 

@@ -21,3 +21,18 @@ export interface JoinMessage extends Message {
         playerColor: string;
     };
 }
+export interface UpdatePlayersMessage extends Message {
+    data: {
+        players: Array<{
+            id: string;
+            name: string;
+            color: string;
+        }>;
+    };
+}
+export interface UpdateMyPlayerInfoMessage extends Message {
+    data: {
+        playerName: string;
+        playerColor: string;
+    };
+}

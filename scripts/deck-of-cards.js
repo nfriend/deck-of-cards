@@ -19,6 +19,7 @@ var DeckOfCards;
             this._errorHandlers = [];
             this._connectHandlers = [];
             this._disconnectHandlers = [];
+            this._messageQueue = [];
             // used to differentiate between a disconnect and a failure to connect initially
             this.connectionWasOpen = false;
             this.connect = function () {
@@ -34,6 +35,13 @@ var DeckOfCards;
                 _this.connection.onopen = function () {
                     _this.connectionWasOpen = true;
                     _this._connectHandlers.forEach(function (element, index, array) { element(); });
+                    // send any messages that were sent before the connection was open
+                    var messageQueueLength = _this._messageQueue.length;
+                    _this._messageQueue.forEach(function (m) {
+                        _this.send(m);
+                    });
+                    // remove all of the items just sent from the queue
+                    _this._messageQueue.splice(0, messageQueueLength);
                 };
                 _this.connection.onclose = function () {
                     if (_this.connectionWasOpen) {
@@ -58,7 +66,12 @@ var DeckOfCards;
             };
             this.send = function (data) {
                 if (_this.connection) {
-                    _this.connection.send(JSON.stringify(data));
+                    if (_this.connection.readyState !== WebSocket.OPEN) {
+                        _this._messageQueue.push(data);
+                    }
+                    else {
+                        _this.connection.send(JSON.stringify(data));
+                    }
                 }
             };
             this.on = function (eventType, handler) {
@@ -113,10 +126,15 @@ var DeckOfCards;
                     }
                 }
             };
+            if (WebsocketService.Instance) {
+                throw 'WebsocketService is a singleton and has already been instantiated.  Use WebsocketService.Instance instead.';
+            }
+            WebsocketService.Instance = this;
         }
         return WebsocketService;
     })();
     DeckOfCards.WebsocketService = WebsocketService;
+    new WebsocketService();
 })(DeckOfCards || (DeckOfCards = {}));
 /// <reference path="../typings/deck-of-cards-server/Messages" />
 var DeckOfCards;
@@ -129,7 +147,19 @@ var DeckOfCards;
                 this.messages = ko.observableArray([]);
                 this.chatInput = ko.observable(null);
                 this.chatHistory = [];
-                this.wss = new DeckOfCards.WebsocketService();
+                this.wss = DeckOfCards.WebsocketService.Instance;
+                this.onWebsocketReceive = function (wsm) {
+                    DeckOfCards.log('recieved messages');
+                    if (wsm.messageType === 'chat') {
+                        var wsMessage = wsm;
+                        _this.pop.play();
+                        _this.messages.push(wsMessage);
+                    }
+                    else if (wsm.messageType === 'chatHistory') {
+                        var wsMessage = wsm;
+                        _this.messages.pushRange(wsMessage.data.messages);
+                    }
+                };
                 this.chatInputKeyDown = function (e) {
                     if (e.which === DeckOfCards.Key.Enter && !e.shiftKey) {
                         e.preventDefault();
@@ -155,18 +185,16 @@ var DeckOfCards;
                     if (_this.sendIsDisabled()) {
                         return;
                     }
-                    _this.wss.send({
+                    var chatMessage = {
                         messageType: 'chat',
                         data: {
+                            playerId: DeckOfCards.Globals.playerId(),
                             message: _this.chatInput()
                         }
-                    });
-                    _this.messages.push({
-                        name: 'Nathan',
-                        message: _this.prepareMessage(_this.chatInput()),
-                        color: 'red',
-                        isMe: true
-                    });
+                    };
+                    _this.wss.send(chatMessage);
+                    _this.messages.push(chatMessage);
+                    // save the chat history for shell-like autocomplete
                     _this.chatHistory.push(_this.chatInput());
                     if (_this.chatHistory.length > 50) {
                         _this.chatHistory.shift();
@@ -174,56 +202,17 @@ var DeckOfCards;
                     _this.chatHistoryPointer = _this.chatHistory.length;
                     _this.chatInput('');
                 };
-                this.messages.push({
-                    name: 'Nathan',
-                    message: 'Hey, this is pretty neat!',
-                    color: 'red',
-                    isMe: true
-                });
-                this.messages.push({
-                    name: 'Derek',
-                    message: 'Yeah it is.',
-                    color: 'blue'
-                });
-                this.messages.push({
-                    name: 'Emily',
-                    message: 'Cool.',
-                    color: 'green'
-                });
-                this.messages.push({
-                    name: 'Nathan',
-                    message: 'Hey, this is pretty neat!',
-                    color: 'red',
-                    isMe: true
-                });
-                //temporary
-                this.wss.on('connect', function () {
-                    _this.wss.send({
-                        messageType: 'join',
-                        data: {
-                            id: 'abc'
-                        }
+                this.playerInfoLookup = ko.pureComputed(function () {
+                    var colorLookup = {};
+                    DeckOfCards.Globals.players().forEach(function (p) {
+                        colorLookup[p.id] = {
+                            color: p.color,
+                            name: p.name
+                        };
                     });
+                    return colorLookup;
                 });
-                this.wss.on('receive', function (wsMessage) {
-                    if (wsMessage.messageType === 'chat') {
-                        _this.pop.play();
-                        _this.messages.push({
-                            name: 'Player',
-                            message: _this.prepareMessage(wsMessage.data.message),
-                            color: 'purple'
-                        });
-                    }
-                    else if (wsMessage.messageType === 'chatHistory') {
-                        wsMessage.data.messages.forEach(function (message) {
-                            _this.messages.push({
-                                name: 'History',
-                                message: _this.prepareMessage(message.data.message),
-                                color: 'black'
-                            });
-                        });
-                    }
-                });
+                this.wss.on('receive', this.onWebsocketReceive);
                 this.wss.connect();
                 this.pop = new Audio('./audio/pop.mp3');
                 this.pop.volume = .2;
@@ -236,6 +225,22 @@ var DeckOfCards;
             ChatViewModel.prototype.prepareMessage = function (s) {
                 return DeckOfCards.Utility.emoticonize(DeckOfCards.Utility.linkatize(DeckOfCards.Utility.escapeHtml(s)));
             };
+            ChatViewModel.prototype.getPlayerColor = function (playerId) {
+                if (this.playerInfoLookup()[playerId]) {
+                    return this.playerInfoLookup()[playerId].color;
+                }
+                else {
+                    return 'red';
+                }
+            };
+            ChatViewModel.prototype.getPlayerName = function (playerId) {
+                if (this.playerInfoLookup()[playerId]) {
+                    return this.playerInfoLookup()[playerId].name;
+                }
+                else {
+                    return 'Player';
+                }
+            };
             return ChatViewModel;
         })();
         ViewModel.ChatViewModel = ChatViewModel;
@@ -247,8 +252,24 @@ var DeckOfCards;
     (function (ViewModel) {
         var PlayerInfoViewModel = (function () {
             function PlayerInfoViewModel() {
-                this.placement = function () {
+                var _this = this;
+                this.playerName = DeckOfCards.Globals.playerName;
+                this.playerColor = DeckOfCards.Globals.playerColor;
+                this.wss = DeckOfCards.WebsocketService.Instance;
+                this.onPlayerInfoChanged = function () {
+                    Cookies.set('playerName', DeckOfCards.Globals.playerName(), DeckOfCards.Globals.cookieSettings);
+                    Cookies.set('playerColor', DeckOfCards.Globals.playerColor(), DeckOfCards.Globals.cookieSettings);
+                    var updateMyInfoMessage = {
+                        messageType: 'updateMyPlayerInfo',
+                        data: {
+                            playerColor: DeckOfCards.Globals.playerColor(),
+                            playerName: DeckOfCards.Globals.playerName()
+                        }
+                    };
+                    _this.wss.send(updateMyInfoMessage);
                 };
+                this.playerName.subscribe(this.onPlayerInfoChanged);
+                this.playerColor.subscribe(this.onPlayerInfoChanged);
             }
             return PlayerInfoViewModel;
         })();
@@ -358,12 +379,44 @@ var DeckOfCards;
     }
     DeckOfCards.log = log;
 })(DeckOfCards || (DeckOfCards = {}));
+/// <reference path="../typings/deck-of-cards-server/Messages" />
 var DeckOfCards;
 (function (DeckOfCards) {
     var ViewModel;
     (function (ViewModel) {
         var DeckOfCardsViewModel = (function () {
             function DeckOfCardsViewModel() {
+                var _this = this;
+                this.onUpdatePlayersMessage = function (message) {
+                    DeckOfCards.log('updating all players', message);
+                    DeckOfCards.Globals.players.removeAll();
+                    DeckOfCards.Globals.players.pushRange(message.data.players.map(function (p) {
+                        return {
+                            id: p.id,
+                            name: p.name,
+                            color: p.color,
+                            //for now
+                            orientation: null
+                        };
+                    }));
+                    DeckOfCards.log(ko.unwrap(DeckOfCards.Globals.players));
+                };
+                DeckOfCards.WebsocketService.Instance.on('receive', function (wsMessage) {
+                    if (wsMessage.messageType === 'updatePlayers') {
+                        _this.onUpdatePlayersMessage(wsMessage);
+                    }
+                });
+                DeckOfCards.WebsocketService.Instance.connect();
+                var joinMessage = {
+                    messageType: 'join',
+                    data: {
+                        gameId: DeckOfCards.Globals.gameId(),
+                        playerId: DeckOfCards.Globals.playerId(),
+                        playerName: DeckOfCards.Globals.playerName(),
+                        playerColor: DeckOfCards.Globals.playerColor()
+                    }
+                };
+                DeckOfCards.WebsocketService.Instance.send(joinMessage);
             }
             return DeckOfCardsViewModel;
         })();
@@ -555,6 +608,24 @@ var DeckOfCards;
         Utility.newGuid = newGuid;
     })(Utility = DeckOfCards.Utility || (DeckOfCards.Utility = {}));
 })(DeckOfCards || (DeckOfCards = {}));
+ko.observableArray.fn['pushRange'] = function (newItems) {
+    var _this = this;
+    ko.unwrap(newItems).forEach(function (newItem) {
+        _this.push(newItem);
+    });
+};
+var DeckOfCards;
+(function (DeckOfCards) {
+    var Globals;
+    (function (Globals) {
+        Globals.playerId = ko.observable(null);
+        Globals.playerName = ko.observable(null);
+        Globals.playerColor = ko.observable(null);
+        Globals.gameId = ko.observable(null);
+        Globals.players = ko.observableArray([]);
+        Globals.cookieSettings = { expires: 365, path: '/' };
+    })(Globals = DeckOfCards.Globals || (DeckOfCards.Globals = {}));
+})(DeckOfCards || (DeckOfCards = {}));
 /// <reference path="loaders" />
 /// <reference path="log" />
 /// <reference path="./viewModel/DeckOfCardsViewModel" />
@@ -565,12 +636,14 @@ var DeckOfCards;
 /// <reference path="./bindings/verticalArrangement-binding" />
 /// <reference path="./Key" />
 /// <reference path="./utility" />
+/// <reference path="./knockout-extensions" />
+/// <reference path="./global" />
 var DeckOfCards;
 (function (DeckOfCards) {
     init();
     function init() {
         drawScene();
-        setUpPlayerInfo();
+        setUpGlobalInfo();
         startKnockout();
     }
     function drawScene() {
@@ -591,14 +664,20 @@ var DeckOfCards;
             renderer.render(scene, camera);
         }
     }
-    function setUpPlayerInfo() {
-        Globals.playerId = Cookies.get('playerId') || DeckOfCards.Utility.newGuid();
-        Globals.playerName = Cookies.get('playerName') || 'Player';
-        Globals.playerColor = Cookies.get('playerColor') || 'red';
-        var cookieSettings = { expires: 365, path: '/' };
-        Cookies.set('playerId', Globals.playerId, cookieSettings);
-        Cookies.set('playerName', Globals.playerName, cookieSettings);
-        Cookies.set('playerColor', Globals.playerColor, cookieSettings);
+    function setUpGlobalInfo() {
+        DeckOfCards.Globals.playerId(Cookies.get('playerId') || DeckOfCards.Utility.newGuid());
+        DeckOfCards.Globals.playerName(Cookies.get('playerName') || 'Player');
+        DeckOfCards.Globals.playerColor(Cookies.get('playerColor') || 'red');
+        Cookies.set('playerId', DeckOfCards.Globals.playerId(), DeckOfCards.Globals.cookieSettings);
+        Cookies.set('playerName', DeckOfCards.Globals.playerName(), DeckOfCards.Globals.cookieSettings);
+        Cookies.set('playerColor', DeckOfCards.Globals.playerColor(), DeckOfCards.Globals.cookieSettings);
+        var gameIdUrlRegex = /([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$)/i;
+        var gameIdMatches = gameIdUrlRegex.exec(window.location.href);
+        var gameId = gameIdMatches ? gameIdMatches[1] : DeckOfCards.Utility.newGuid();
+        if (!gameIdMatches) {
+            window.history.pushState(null, '', '#/' + gameId);
+        }
+        DeckOfCards.Globals.gameId(gameId);
     }
     function startKnockout() {
         ko.options.deferUpdates = true;

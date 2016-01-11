@@ -1,9 +1,9 @@
 <div class="message-container">
 	<div class="message-scroll-container" data-bind="foreach: { data: messages }, scrollDown: messages">
 		<div class="message">
-			<i class="fa fa-circle" data-bind="css: color"></i>
-			<b data-bind="text: name + ': '"></b>
-			<span style="white-space: pre" data-bind="html: message"></span>
+			<i class="fa fa-circle" data-bind="css: $parent.getPlayerColor(data.playerId)"></i>
+			<b data-bind="text: $parent.getPlayerName(data.playerId) + ': '"></b>
+			<span style="white-space: pre" data-bind="html: data.message"></span>
 		</div>
 	</div>
 </div>

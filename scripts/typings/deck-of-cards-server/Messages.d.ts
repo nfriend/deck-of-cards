@@ -15,7 +15,24 @@ interface ChatHistoryMessage extends Message {
 }
 interface JoinMessage extends Message {
     data: {
-        id: string;
+        gameId: string;
         playerId: string;
+        playerName: string;
+        playerColor: string;
+    };
+}
+interface UpdatePlayersMessage extends Message {
+    data: {
+        players: Array<{
+            id: string;
+            name: string;
+            color: string;
+        }>;
+    };
+}
+interface UpdateMyPlayerInfoMessage extends Message {
+    data: {
+        playerName: string;
+        playerColor: string;
     };
 }
