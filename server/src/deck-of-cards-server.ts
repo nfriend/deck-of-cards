@@ -15,7 +15,7 @@ var server = http.createServer((request, response) => {
 	response.end();
 });
 server.listen(17765, () => {
-	log('Server is listening on port 18734');
+	log('Server is listening on port 17765');
 });
 
 var wsServer = new WebSocketServer({ 
