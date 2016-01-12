@@ -6,35 +6,51 @@
 					options: { title: 'Choose your color', placement: 'bottom', container: 'body' },
 				 	template: 'color-picker-template',
 					data: $data }">
-		<div class="color-square red"></div>
+		<div data-bind="attr: { class: 'color-square ' + playerColor() }"></div>
 	</button>
 </div>
 
 <script type="text/html" id="color-picker-template">
 	<div class="color-picker-popover-container">
-		<button class="btn btn-default player-color-button color-square-button form-control">
-			<div class="color-square blue"></div>
+		<button class="btn btn-default player-color-button color-square-button form-control" data-bind="click: function() { setPlayerColor('blue'); }">
+			<div class="color-square blue" data-bind="if: playerColor() === 'blue'">
+                <i class="fa fa-check"></i>
+            </div>
 		</button>
-		<button class="btn btn-default player-color-button color-square-button form-control">
-			<div class="color-square green"></div>
+		<button class="btn btn-default player-color-button color-square-button form-control" data-bind="click: function() { setPlayerColor('green'); }">
+			<div class="color-square green" data-bind="if: playerColor() === 'green'">
+                <i class="fa fa-check"></i>
+            </div>
 		</button>
-		<button class="btn btn-default player-color-button color-square-button form-control">
-			<div class="color-square light-blue"></div>
+		<button class="btn btn-default player-color-button color-square-button form-control" data-bind="click: function() { setPlayerColor('light-blue'); }">
+			<div class="color-square light-blue" data-bind="if: playerColor() === 'light-blue'">
+                <i class="fa fa-check"></i>
+            </div>
 		</button>
-		<button class="btn btn-default player-color-button color-square-button form-control">
-			<div class="color-square red"></div>
+		<button class="btn btn-default player-color-button color-square-button form-control" data-bind="click: function() { setPlayerColor('red'); }">
+			<div class="color-square red" data-bind="if: playerColor() === 'red'">
+                <i class="fa fa-check"></i>
+            </div>
 		</button>
-		<button class="btn btn-default player-color-button color-square-button form-control">
-			<div class="color-square orange"></div>
+		<button class="btn btn-default player-color-button color-square-button form-control" data-bind="click: function() { setPlayerColor('orange'); }">
+			<div class="color-square orange" data-bind="if: playerColor() === 'orange'">
+                <i class="fa fa-check"></i>
+            </div>
 		</button>
-		<button class="btn btn-default player-color-button color-square-button form-control">
-			<div class="color-square purple"></div>
+		<button class="btn btn-default player-color-button color-square-button form-control" data-bind="click: function() { setPlayerColor('purple'); }">
+			<div class="color-square purple" data-bind="if: playerColor() === 'purple'">
+                <i class="fa fa-check"></i>
+            </div>
 		</button>
-		<button class="btn btn-default player-color-button color-square-button form-control">
-			<div class="color-square white"></div>
+		<button class="btn btn-default player-color-button color-square-button form-control" data-bind="click: function() { setPlayerColor('white'); }">
+			<div class="color-square white" data-bind="if: playerColor() === 'white'">
+                <i class="fa fa-check" style="color: black"></i>
+            </div>
 		</button>
-		<button class="btn btn-default player-color-button color-square-button form-control">
-			<div class="color-square black"></div>
+		<button class="btn btn-default player-color-button color-square-button form-control" data-bind="click: function() { setPlayerColor('black'); }">
+			<div class="color-square black" data-bind="if: playerColor() === 'black'">
+                <i class="fa fa-check"></i>
+            </div>
 		</button>
 	</div>
 </script>

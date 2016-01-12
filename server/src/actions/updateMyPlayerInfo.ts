@@ -11,7 +11,6 @@ function updateMyPlayerInfo(gameIdToClients: GameClientMapping, connection: Conn
         
     // alert all other players about the updates player info
     gameIdToClients[connection.gameId].connections.forEach(playerConnection => {
-        if (connection !== playerConnection) {
             let updateMessage: Messages.UpdatePlayersMessage = {
                 messageType: 'updatePlayers',
                 data: {
@@ -26,6 +25,5 @@ function updateMyPlayerInfo(gameIdToClients: GameClientMapping, connection: Conn
             }
             
             playerConnection.sendMessage(updateMessage);
-        }
     });
 }

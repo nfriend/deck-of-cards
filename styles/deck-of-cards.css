@@ -176,3 +176,7 @@ playerinfo .player-info-container .player-color-button {
   width: 100%;
   height: 100%;
 }
+.color-square-button .color-square i {
+  color: white;
+  margin-top: 5px;
+}

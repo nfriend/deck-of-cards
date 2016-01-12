@@ -65,13 +65,11 @@ var DeckOfCards;
                 };
             };
             this.send = function (data) {
-                if (_this.connection) {
-                    if (_this.connection.readyState !== WebSocket.OPEN) {
-                        _this._messageQueue.push(data);
-                    }
-                    else {
-                        _this.connection.send(JSON.stringify(data));
-                    }
+                if (!_this.connection || _this.connection.readyState !== WebSocket.OPEN) {
+                    _this._messageQueue.push(data);
+                }
+                else {
+                    _this.connection.send(JSON.stringify(data));
                 }
             };
             this.on = function (eventType, handler) {
@@ -153,10 +151,16 @@ var DeckOfCards;
                     if (wsm.messageType === 'chat') {
                         var wsMessage = wsm;
                         _this.pop.play();
+                        // prepare the message for display
+                        wsMessage.data.message = _this.prepareMessage(wsMessage.data.message);
                         _this.messages.push(wsMessage);
                     }
                     else if (wsm.messageType === 'chatHistory') {
                         var wsMessage = wsm;
+                        // prepare the messages for display
+                        wsMessage.data.messages.forEach(function (m) {
+                            m.data.message = _this.prepareMessage(m.data.message);
+                        });
                         _this.messages.pushRange(wsMessage.data.messages);
                     }
                 };
@@ -193,6 +197,8 @@ var DeckOfCards;
                         }
                     };
                     _this.wss.send(chatMessage);
+                    // prepare the message for display
+                    chatMessage.data.message = _this.prepareMessage(chatMessage.data.message);
                     _this.messages.push(chatMessage);
                     // save the chat history for shell-like autocomplete
                     _this.chatHistory.push(_this.chatInput());
@@ -213,7 +219,6 @@ var DeckOfCards;
                     return colorLookup;
                 });
                 this.wss.on('receive', this.onWebsocketReceive);
-                this.wss.connect();
                 this.pop = new Audio('./audio/pop.mp3');
                 this.pop.volume = .2;
             }
@@ -267,6 +272,9 @@ var DeckOfCards;
                         }
                     };
                     _this.wss.send(updateMyInfoMessage);
+                };
+                this.setPlayerColor = function (newColor) {
+                    _this.playerColor(newColor);
                 };
                 this.playerName.subscribe(this.onPlayerInfoChanged);
                 this.playerColor.subscribe(this.onPlayerInfoChanged);
@@ -406,7 +414,6 @@ var DeckOfCards;
                         _this.onUpdatePlayersMessage(wsMessage);
                     }
                 });
-                DeckOfCards.WebsocketService.Instance.connect();
                 var joinMessage = {
                     messageType: 'join',
                     data: {
@@ -417,6 +424,9 @@ var DeckOfCards;
                     }
                 };
                 DeckOfCards.WebsocketService.Instance.send(joinMessage);
+                setTimeout(function () {
+                    DeckOfCards.WebsocketService.Instance.connect();
+                }, 100);
             }
             return DeckOfCardsViewModel;
         })();

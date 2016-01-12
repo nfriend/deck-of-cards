@@ -12,7 +12,6 @@ module DeckOfCards.ViewModel {
 
         constructor() {
             this.wss.on('receive', this.onWebsocketReceive);
-            this.wss.connect();
 
             this.pop = new Audio('./audio/pop.mp3');
             this.pop.volume = .2;
@@ -23,9 +22,19 @@ module DeckOfCards.ViewModel {
             if (wsm.messageType === 'chat') {
                 let wsMessage = <ChatMessage>wsm;
                 this.pop.play();
+                
+                // prepare the message for display
+                wsMessage.data.message = this.prepareMessage(wsMessage.data.message);
+                
                 this.messages.push(wsMessage);
             } else if (wsm.messageType === 'chatHistory') {
                 let wsMessage = <ChatHistoryMessage>wsm;
+                
+                // prepare the messages for display
+                wsMessage.data.messages.forEach(m => {
+                   m.data.message = this.prepareMessage(m.data.message); 
+                });
+                
                 this.messages.pushRange(wsMessage.data.messages);
             }
         }
@@ -66,6 +75,9 @@ module DeckOfCards.ViewModel {
             };
 
             this.wss.send(chatMessage);
+            
+            // prepare the message for display
+            chatMessage.data.message = this.prepareMessage(chatMessage.data.message);
             
             this.messages.push(chatMessage);
 

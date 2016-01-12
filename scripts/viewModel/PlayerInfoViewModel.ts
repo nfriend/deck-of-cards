@@ -23,5 +23,11 @@ module DeckOfCards.ViewModel {
             };
             this.wss.send(updateMyInfoMessage);
         }
+
+        setPlayerColor = (newColor: string) => {
+            this.playerColor(newColor);
+        }
+
+
     }
 }

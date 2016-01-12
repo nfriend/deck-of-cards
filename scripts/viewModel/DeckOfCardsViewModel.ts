@@ -10,7 +10,6 @@ module DeckOfCards.ViewModel {
                } 
             });
             
-            WebsocketService.Instance.connect();
             let joinMessage: JoinMessage = {
                 messageType: 'join',
                 data: {
@@ -21,6 +20,10 @@ module DeckOfCards.ViewModel {
                 }
             };
             WebsocketService.Instance.send(joinMessage);
+            
+            setTimeout(() => {
+                WebsocketService.Instance.connect();
+            }, 100);
         }
         
         onUpdatePlayersMessage = (message: UpdatePlayersMessage) => {

@@ -37,7 +37,7 @@ module DeckOfCards {
                 // send any messages that were sent before the connection was open
                 let messageQueueLength = this._messageQueue.length;
                 this._messageQueue.forEach(m => {
-                   this.send(m); 
+                    this.send(m);
                 });
                 // remove all of the items just sent from the queue
                 this._messageQueue.splice(0, messageQueueLength);
@@ -65,12 +65,10 @@ module DeckOfCards {
         }
 
         send = (data) => {
-            if (this.connection) {
-                if (this.connection.readyState !== WebSocket.OPEN) {
-                    this._messageQueue.push(data);
-                } else {
-                    this.connection.send(JSON.stringify(data));
-                }
+            if (!this.connection || this.connection.readyState !== WebSocket.OPEN) {
+                this._messageQueue.push(data);
+            } else {
+                this.connection.send(JSON.stringify(data));
             }
         }
 
