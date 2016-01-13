@@ -13,6 +13,10 @@ interface ChatHistoryMessage extends Message {
         messages: ChatMessage[];
     };
 }
+interface RequestChatHistory extends Message {
+}
+interface RequestPlayerUpdate extends Message {
+}
 interface JoinMessage extends Message {
     data: {
         gameId: string;

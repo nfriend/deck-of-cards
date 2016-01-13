@@ -13,6 +13,10 @@ export interface ChatHistoryMessage extends Message {
         messages: ChatMessage[];
     };
 }
+export interface RequestChatHistory extends Message {
+}
+export interface RequestPlayerUpdate extends Message {
+}
 export interface JoinMessage extends Message {
     data: {
         gameId: string;

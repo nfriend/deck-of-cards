@@ -11,19 +11,19 @@ function updateMyPlayerInfo(gameIdToClients: GameClientMapping, connection: Conn
         
     // alert all other players about the updates player info
     gameIdToClients[connection.gameId].connections.forEach(playerConnection => {
-            let updateMessage: Messages.UpdatePlayersMessage = {
-                messageType: 'updatePlayers',
-                data: {
-                    players: gameIdToClients[connection.gameId].connections.map(c => {
-                       return {
-                           id: c.player.id,
-                           name: c.player.name,
-                           color: c.player.color     
-                       } 
-                    })
-                }
+        let updateMessage: Messages.UpdatePlayersMessage = {
+            messageType: 'updatePlayers',
+            data: {
+                players: gameIdToClients[connection.gameId].connections.map(c => {
+                    return {
+                        id: c.player.id,
+                        name: c.player.name,
+                        color: c.player.color
+                    }
+                })
             }
-            
-            playerConnection.sendMessage(updateMessage);
+        }
+
+        playerConnection.sendMessage(updateMessage);
     });
 }

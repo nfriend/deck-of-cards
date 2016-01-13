@@ -3,13 +3,13 @@
 module DeckOfCards.ViewModel {
     export class DeckOfCardsViewModel {
         constructor() {
-            
+
             WebsocketService.Instance.on('receive', (wsMessage: Message) => {
-               if (wsMessage.messageType === 'updatePlayers') {
-                   this.onUpdatePlayersMessage(wsMessage);
-               } 
+                if (wsMessage.messageType === 'updatePlayers') {
+                    this.onUpdatePlayersMessage(wsMessage);
+                }
             });
-            
+
             let joinMessage: JoinMessage = {
                 messageType: 'join',
                 data: {
@@ -20,12 +20,16 @@ module DeckOfCards.ViewModel {
                 }
             };
             WebsocketService.Instance.send(joinMessage);
-            
-            setTimeout(() => {
-                WebsocketService.Instance.connect();
-            }, 100);
+
+            let requestPlayerUpdateMessage: RequestPlayerUpdate = {
+                messageType: 'requestPlayerUpdate',
+                data: {}
+            }
+            WebsocketService.Instance.send(requestPlayerUpdateMessage);
+
+            WebsocketService.Instance.connect();
         }
-        
+
         onUpdatePlayersMessage = (message: UpdatePlayersMessage) => {
             log('updating all players', message);
             Globals.players.removeAll();

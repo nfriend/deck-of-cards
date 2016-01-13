@@ -1,4 +1,5 @@
 /// <reference path="../typings/deck-of-cards-server/Messages" />
+/// <reference path="../WebsocketService" />
 
 module DeckOfCards.ViewModel {
 
@@ -12,13 +13,19 @@ module DeckOfCards.ViewModel {
 
         constructor() {
             this.wss.on('receive', this.onWebsocketReceive);
+            
+            // request that any chat history for this game be sent to us
+            let chatRequest: RequestChatHistory = {
+                messageType: 'requestChatHistory',  
+                data: {}
+            };
+            this.wss.send(chatRequest);
 
             this.pop = new Audio('./audio/pop.mp3');
             this.pop.volume = .2;
         }
 
         onWebsocketReceive = (wsm: Message) => {
-            log('recieved messages');
             if (wsm.messageType === 'chat') {
                 let wsMessage = <ChatMessage>wsm;
                 this.pop.play();

@@ -135,6 +135,7 @@ var DeckOfCards;
     new WebsocketService();
 })(DeckOfCards || (DeckOfCards = {}));
 /// <reference path="../typings/deck-of-cards-server/Messages" />
+/// <reference path="../WebsocketService" />
 var DeckOfCards;
 (function (DeckOfCards) {
     var ViewModel;
@@ -147,7 +148,6 @@ var DeckOfCards;
                 this.chatHistory = [];
                 this.wss = DeckOfCards.WebsocketService.Instance;
                 this.onWebsocketReceive = function (wsm) {
-                    DeckOfCards.log('recieved messages');
                     if (wsm.messageType === 'chat') {
                         var wsMessage = wsm;
                         _this.pop.play();
@@ -219,6 +219,12 @@ var DeckOfCards;
                     return colorLookup;
                 });
                 this.wss.on('receive', this.onWebsocketReceive);
+                // request that any chat history for this game be sent to us
+                var chatRequest = {
+                    messageType: 'requestChatHistory',
+                    data: {}
+                };
+                this.wss.send(chatRequest);
                 this.pop = new Audio('./audio/pop.mp3');
                 this.pop.volume = .2;
             }
@@ -424,9 +430,12 @@ var DeckOfCards;
                     }
                 };
                 DeckOfCards.WebsocketService.Instance.send(joinMessage);
-                setTimeout(function () {
-                    DeckOfCards.WebsocketService.Instance.connect();
-                }, 100);
+                var requestPlayerUpdateMessage = {
+                    messageType: 'requestPlayerUpdate',
+                    data: {}
+                };
+                DeckOfCards.WebsocketService.Instance.send(requestPlayerUpdateMessage);
+                DeckOfCards.WebsocketService.Instance.connect();
             }
             return DeckOfCardsViewModel;
         })();

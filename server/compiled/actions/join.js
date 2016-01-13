@@ -17,28 +17,6 @@ function join(gameIdToGames, connection, message) {
         game: gameIdToGames[gameId]
     };
     gameIdToGames[gameId].connections.push(connection);
-    if (gameIdToGames[gameId].chatHistory.length > 0) {
-        var chatHistoryMessage = {
-            messageType: 'chatHistory',
-            data: {
-                messages: gameIdToGames[gameId].chatHistory
-            }
-        };
-        connection.sendMessage(chatHistoryMessage);
-    }
-    var updatedPlayersMessage = {
-        messageType: 'updatePlayers',
-        data: {
-            players: gameIdToGames[gameId].connections.map(function (c) {
-                return {
-                    id: c.player.id,
-                    color: c.player.color,
-                    name: c.player.name
-                };
-            })
-        }
-    };
-    connection.sendMessage(updatedPlayersMessage);
 }
 module.exports = join;
 //# sourceMappingURL=join.js.map

@@ -3,6 +3,8 @@ var log = require('./log');
 var chat = require('./actions/chat');
 var join = require('./actions/join');
 var updateMyPlayerInfo = require('./actions/updateMyPlayerInfo');
+var requestChatHistory = require('./actions/requestChatHistory');
+var requestPlayerUpdate = require('./actions/requestPlayerUpdate');
 var MessageProcessor = (function () {
     function MessageProcessor() {
         if (MessageProcessor.Instance) {
@@ -20,6 +22,12 @@ var MessageProcessor = (function () {
         }
         else if (message.messageType === 'updateMyPlayerInfo') {
             updateMyPlayerInfo(this.gameIdToClients, connection, message);
+        }
+        else if (message.messageType === 'requestChatHistory') {
+            requestChatHistory(this.gameIdToClients, connection, message);
+        }
+        else if (message.messageType === 'requestPlayerUpdate') {
+            requestPlayerUpdate(this.gameIdToClients, connection, message);
         }
         else {
             log('Unknown messageType "' + message.messageType + '"');

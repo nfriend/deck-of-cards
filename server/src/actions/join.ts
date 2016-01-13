@@ -29,28 +29,4 @@ function join(gameIdToGames: GameIdToGame, connection: Connection, message: Mess
     }
 
     gameIdToGames[gameId].connections.push(connection);
-
-    if (gameIdToGames[gameId].chatHistory.length > 0) {
-        var chatHistoryMessage: Messages.ChatHistoryMessage = {
-            messageType: 'chatHistory',
-            data: {
-                messages: gameIdToGames[gameId].chatHistory
-            }
-        }
-        connection.sendMessage(chatHistoryMessage);
-    }
-
-    var updatedPlayersMessage: Messages.UpdatePlayersMessage = {
-        messageType: 'updatePlayers',
-        data: {
-            players: gameIdToGames[gameId].connections.map(c => {
-                return {
-                    id: c.player.id,
-                    color: c.player.color,
-                    name: c.player.name
-                }
-            })
-        }
-    };
-    connection.sendMessage(updatedPlayersMessage);
 }

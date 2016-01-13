@@ -7,6 +7,8 @@ import GameClientMapping = require('./GameIdToGame');
 import chat = require('./actions/chat');
 import join = require('./actions/join');
 import updateMyPlayerInfo = require('./actions/updateMyPlayerInfo');
+import requestChatHistory = require('./actions/requestChatHistory');
+import requestPlayerUpdate = require('./actions/requestPlayerUpdate');
 
 export = MessageProcessor;
 
@@ -32,6 +34,10 @@ class MessageProcessor {
             chat(this.gameIdToClients, connection, message);
         } else if (message.messageType === 'updateMyPlayerInfo') {
             updateMyPlayerInfo(this.gameIdToClients, connection, message);
+        } else if (message.messageType === 'requestChatHistory') {
+            requestChatHistory(this.gameIdToClients, connection, message);
+        } else if (message.messageType === 'requestPlayerUpdate') {
+            requestPlayerUpdate(this.gameIdToClients, connection, message);
         } else {
             log('Unknown messageType "' + message.messageType + '"');
         }

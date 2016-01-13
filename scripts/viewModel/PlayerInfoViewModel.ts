@@ -27,7 +27,5 @@ module DeckOfCards.ViewModel {
         setPlayerColor = (newColor: string) => {
             this.playerColor(newColor);
         }
-
-
     }
 }
