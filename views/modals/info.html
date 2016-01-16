@@ -1,0 +1,55 @@
+<div data-bind="modal: {
+    visible: isVisible,
+    header: { name: 'info-modal-header-template', data: $data },
+    body: { name: 'info-modal-body-template', data: $data },
+    footer: { name: 'info-modal-footer-template', data: $data },
+}"></div>
+
+<script type="text/html" id="info-modal-header-template">
+    <button type="button" class="close" data-bind="click: closeModal"><span aria-hidden="true">&times;</span></button>
+    <h4>About Deck of Cards</h4>
+</script>
+
+<script type="text/html" id="info-modal-body-template">
+    <p>Designed and developed by <a href="http://nathanfriend.io" target="_blank">Nathan Friend</a>, with a little help from:</p>
+    <div class="row">
+        <div class="col-sm-4">
+            <ul>
+                <li><a href="http://www.typescriptlang.org/" target="_blank">TypeScript</a></li>
+                <li><a href="http://lesscss.org/" target="_blank">Less</a></li>
+                <li><a href="http://gruntjs.com/" target="_blank">Grunt</a></li>
+                <li><a href="http://threejs.org/" target="_blank">Three.js</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-4">
+            <ul>
+                <li><a href="http://jquery.com/" target="_blank">jQuery</a></li>
+                <li><a href="http://getbootstrap.com/" target="_blank">Bootstrap</a></li>
+                <li><a href="http://fortawesome.github.io/Font-Awesome/" target="_blank">Font Awesome</a></li>
+                <li><a href="http://sourceforge.net/projects/vector-cards/" target="_blank">Vectorized Playing Cards 2.0</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-4">
+            <ul>
+                <li><a href="http://knockoutjs.com/" target="_blank">Knockout</a></li>
+                <li><a href="https://faulknercs.github.io/Knockstrap/" target="_blank">Knockstrap</a></li>
+            </ul>
+        </div>
+    </div>
+    <br />
+    <div>Complete source can be found on Github: <a href="https://github.com/nfriend/deck-of-cards">https://github.com/nfriend/deck-of-cards</a></div>
+    </br>
+    <div>
+        <div>The <a href="http://sourceforge.net/projects/vector-cards/" target="_blank">Vectorized Playing Cards 2.0</a> library
+            is used under the terms of the <a href="www.gnu.org/copyleft/lesser.html">LGPL 3.0</a> license:</div>
+        <div class="indented">
+            Vectorized Playing Cards 2.0 - <a href="http://sourceforge.net/projects/vector-cards/">http://sourceforge.net/projects/vector-cards/</a>
+            <br /> Copyright 2015 - Chris Aguilar - <a href="mailto: conjurenation@gmail.com">conjurenation@gmail.com</a>
+            <br /> Licensed under LGPL 3 - <a href="www.gnu.org/copyleft/lesser.html">www.gnu.org/copyleft/lesser.html</a>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="info-modal-footer-template">
+    <button class="btn btn-default" data-bind="click: closeModal">Close</button>
+</script>

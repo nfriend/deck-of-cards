@@ -290,8 +290,86 @@ var DeckOfCards;
         ViewModel.PlayerInfoViewModel = PlayerInfoViewModel;
     })(ViewModel = DeckOfCards.ViewModel || (DeckOfCards.ViewModel = {}));
 })(DeckOfCards || (DeckOfCards = {}));
+/// <reference path="../typings/deck-of-cards-server/Messages" />
+var DeckOfCards;
+(function (DeckOfCards) {
+    var ViewModel;
+    (function (ViewModel) {
+        var ToolbarViewModel = (function () {
+            function ToolbarViewModel() {
+                this.addButtonClicked = function () {
+                    ViewModel.AddCardsViewModel.ShowModal();
+                };
+                this.infoButtonClicked = function () {
+                    ViewModel.InfoViewModel.ShowModal();
+                };
+            }
+            return ToolbarViewModel;
+        })();
+        ViewModel.ToolbarViewModel = ToolbarViewModel;
+    })(ViewModel = DeckOfCards.ViewModel || (DeckOfCards.ViewModel = {}));
+})(DeckOfCards || (DeckOfCards = {}));
+var DeckOfCards;
+(function (DeckOfCards) {
+    var ViewModel;
+    (function (ViewModel) {
+        var AddCardsViewModel = (function () {
+            function AddCardsViewModel() {
+                var _this = this;
+                this.isVisible = ko.observable(false);
+                this.closeModal = function () {
+                    _this.isVisible(false);
+                };
+                this.addCardsButtonClicked = function () {
+                };
+                if (AddCardsViewModel.Instance) {
+                    throw 'AddCardsViewModel is a singleton and has already been instantiated.  Use AddCardsViewModel.Instance instead.';
+                }
+                AddCardsViewModel.Instance = this;
+            }
+            AddCardsViewModel.ShowModal = function () {
+                AddCardsViewModel.Instance.isVisible(true);
+            };
+            AddCardsViewModel.HideModal = function () {
+                AddCardsViewModel.Instance.closeModal();
+            };
+            return AddCardsViewModel;
+        })();
+        ViewModel.AddCardsViewModel = AddCardsViewModel;
+    })(ViewModel = DeckOfCards.ViewModel || (DeckOfCards.ViewModel = {}));
+})(DeckOfCards || (DeckOfCards = {}));
+var DeckOfCards;
+(function (DeckOfCards) {
+    var ViewModel;
+    (function (ViewModel) {
+        var InfoViewModel = (function () {
+            function InfoViewModel() {
+                var _this = this;
+                this.isVisible = ko.observable(false);
+                this.closeModal = function () {
+                    _this.isVisible(false);
+                };
+                if (InfoViewModel.Instance) {
+                    throw 'InfoViewModel is a singleton and has already been instantiated.  Use InfoViewModel.Instance instead.';
+                }
+                InfoViewModel.Instance = this;
+            }
+            InfoViewModel.ShowModal = function () {
+                InfoViewModel.Instance.isVisible(true);
+            };
+            InfoViewModel.HideModal = function () {
+                InfoViewModel.Instance.closeModal();
+            };
+            return InfoViewModel;
+        })();
+        ViewModel.InfoViewModel = InfoViewModel;
+    })(ViewModel = DeckOfCards.ViewModel || (DeckOfCards.ViewModel = {}));
+})(DeckOfCards || (DeckOfCards = {}));
 /// <reference path="./viewModel/ChatViewModel" />
 /// <reference path="./viewModel/PlayerInfoViewModel" />
+/// <reference path="./viewModel/ToolbarViewModel" />
+/// <reference path="./viewModel/modals/AddCardsViewModel" />
+/// <reference path="./viewModel/modals/InfoViewModel" />
 var DeckOfCards;
 (function (DeckOfCards) {
     ko.components.register('chat', {
@@ -301,6 +379,18 @@ var DeckOfCards;
     ko.components.register('playerinfo', {
         template: { url: './views/player-info.html' },
         viewModel: DeckOfCards.ViewModel.PlayerInfoViewModel
+    });
+    ko.components.register('toolbar', {
+        template: { url: './views/toolbar.html' },
+        viewModel: DeckOfCards.ViewModel.ToolbarViewModel
+    });
+    ko.components.register('add-cards-modal', {
+        template: { url: './views/modals/add-cards.html' },
+        viewModel: DeckOfCards.ViewModel.AddCardsViewModel
+    });
+    ko.components.register('info-modal', {
+        template: { url: './views/modals/info.html' },
+        viewModel: DeckOfCards.ViewModel.InfoViewModel
     });
 })(DeckOfCards || (DeckOfCards = {}));
 (function () {

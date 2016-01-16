@@ -1,0 +1,20 @@
+<div data-bind="modal: {
+    visible: isVisible,
+    header: { name: 'add-cards-modal-header-template', data: $data },
+    body: { name: 'add-cards-modal-body-template', data: $data },
+    footer: { name: 'add-cards-modal-footer-template', data: $data },
+}"></div>
+
+<script type="text/html" id="add-cards-modal-header-template">
+    <button type="button" class="close" data-bind="click: closeModal"><span aria-hidden="true">&times;</span></button>
+    <h4>Add Cards</h4>
+</script>
+
+<script type="text/html" id="add-cards-modal-body-template">
+    body
+</script>
+
+<script type="text/html" id="add-cards-modal-footer-template">
+    <button class="btn btn-primary" data-bind="click: addCardsButtonClicked"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add Cards</button>
+    <button class="btn btn-default" data-bind="click: closeModal">Cancel</button>
+</script>
