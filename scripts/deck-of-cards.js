@@ -366,6 +366,7 @@ var DeckOfCards;
                     _this.isVisible(false);
                 };
                 this.addCardsButtonClicked = function () {
+                    _this.closeModal();
                 };
                 if (AddCardsViewModel.Instance) {
                     throw 'AddCardsViewModel is a singleton and has already been instantiated.  Use AddCardsViewModel.Instance instead.';

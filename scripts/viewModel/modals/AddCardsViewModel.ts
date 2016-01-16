@@ -129,7 +129,9 @@ module DeckOfCards.ViewModel {
         }
 
         addCardsButtonClicked = () => {
-
+            
+            
+            this.closeModal();
         }
 
         static Instance: AddCardsViewModel;

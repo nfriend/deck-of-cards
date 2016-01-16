@@ -25,16 +25,22 @@
                 <div class="image-container no-select">
                     <img data-bind="attr: { src: 'images/cards/' + card.imageUrl, alt: card.name }" />
                     <div class="card-selected-overlay" data-bind="css: { visible: card.count() > 0 }">
-                        <div class="card-count no-select" data-bind="text: card.count()"><div>
+                        <div class="card-count no-select" data-bind="text: card.count()"></div>
+                        <div class="cleared"></div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="cleared"></div>
-    </div>
 </script>
 
 <script type="text/html" id="add-cards-modal-footer-template">
-    <button class="btn btn-primary" data-bind="click: addCardsButtonClicked, disable: totalCount() === 0"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add Cards</button>
+    <button class="btn btn-primary" data-bind="click: addCardsButtonClicked, disable: totalCount() === 0"><i class="fa fa-plus">
+        </i>&nbsp;&nbsp;
+        <span data-bind="if: totalCount() === 0">Add Cards</span>
+        <span data-bind="if: totalCount() === 1">Add 1 Card</span>
+        <span data-bind="if: totalCount() > 1">
+            <span data-bind="text: 'Add ' + totalCount() + ' Cards'"></span>
+        </span>
+    </button>
     <button class="btn btn-default" data-bind="click: closeModal">Cancel</button>
 </script>
