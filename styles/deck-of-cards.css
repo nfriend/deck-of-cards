@@ -37,6 +37,7 @@ html {
   width: 100%;
   margin: 0;
   overflow: hidden;
+  font-family: 'Montserrat', sans-serif;
 }
 canvas {
   width: 100%;
@@ -135,6 +136,8 @@ chat .input-container #chat-input {
   height: 100%;
   right: 0;
   overflow: hidden;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
 }
 #sidebar-container .divider hr {
   margin-top: 0px;
