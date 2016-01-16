@@ -6,6 +6,7 @@
 /// <reference path="./bindings/log-binding" />
 /// <reference path="./bindings/scrollDown-binding" />
 /// <reference path="./bindings/verticalArrangement-binding" />
+/// <reference path="./bindings/popover-binding" />
 /// <reference path="./Key" />
 /// <reference path="./utility" />
 /// <reference path="./knockout-extensions" />
@@ -57,7 +58,7 @@ module DeckOfCards {
         var gameIdMatches = gameIdUrlRegex.exec(window.location.href);
         var gameId = gameIdMatches ? gameIdMatches[1] : Utility.newGuid();
         if (!gameIdMatches) {
-            window.history.pushState(null, '', '#/' + gameId);   
+            window.history.pushState(null, '', '#/' + gameId);
         }
         Globals.gameId(gameId);
     }

@@ -1,7 +1,7 @@
 TODO
 ====
 
-- make color popover close on click outside
+- upgrade to Bootstrap 3.3.7 if popover issue is resolved (currently on 3.3.4, and the popover animation isn't as nice)
 
 - color button isn't clickable in Firefox - an element is covering it.
 
