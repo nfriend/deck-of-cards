@@ -73,26 +73,35 @@ ko.bindingHandlers.popover = {
 
         if (!popoverData) {
             $element.popover(options);
+            
+            // bit of a hack to make bootstrap popovers close when a click is registered outside an open popover
+            var bodyOnClick = function(e) {
+                if (!$element.is(e.target) && $element.has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                    $element.popover('hide');
+                }
+            };
+            
+            // close on escape
+            var bodyOnKeydown = function(e: JQueryKeyEventObject) {
+                if (e.which === DeckOfCards.Key.Escape) {
+                    $element.popover('hide');
+                }
+            }
 
             $element.on('shown.bs.popover inserted.bs.popover', function() {
                 (options.container ? $(options.container) : $element.parent()).one('click', '[data-dismiss="popover"]', function() {
-                    console.log('here');
                     $element.popover('hide');
                 });
+
+                $('body').on('click', bodyOnClick).on('keydown', bodyOnKeydown);
+            });
+
+            $element.on('hidden.bs.popover', () => {
                 
-                // bit of a hack to make bootstrap popovers close when a click it registered outside an open popover
-                var bodyOnClick = function(e) {
-                    $('.popup-trigger').each(function(index, pt) {
-                        //the 'is' for buttons that trigger popups
-                        //the 'has' for icons within a button that triggers a popup
-                        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-                            $(this).popover('hide');
-                            $('body').off('click', bodyOnClick);
-                        }
-                    });
-                };
-                $('body').on('click', bodyOnClick);
-                
+                // workaround for bug introduced in bootstrap 3.3.5
+                $element.data('bs.popover').inState.click = false;
+
+                $('body').off('click', bodyOnClick).off('keydown', bodyOnKeydown);
             });
 
         } else {
