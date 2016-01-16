@@ -1,0 +1,52 @@
+add-cards-modal {
+    .card-container {
+        .suit-container {
+            text-align: center;
+            
+            .card {
+                position: relative;
+                display: inline-block;
+                padding: 10px;
+                cursor: pointer;
+                transition: all 250ms ease-out;
+                
+                .image-container {
+                    width: 100px;
+                    position: relative;
+                    
+                    img {
+                        width: 100px;
+                        border: 1px solid #ccc;
+                        border-radius: 6px;
+                    }
+                    
+                    .card-selected-overlay {
+                        position: absolute;
+                        top: 0;
+                        height: 100%;
+                        width: 100%;
+                        background: rgba(0, 0, 0, .4);
+                        border: 2px solid #333;
+                        border-radius: 6px;
+                        visibility: hidden;
+                        
+                        .card-count {
+                            margin-top: 28px;
+                            font-size: 4em;
+                            color: white;
+                        }
+                        
+                        &.visible {
+                            visibility: visible
+                        }
+                    }   
+                }
+                
+                &:active {
+                    transform: scale(.93, .93);
+                    transition: none;
+                }
+            }
+        }
+    }
+}

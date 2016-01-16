@@ -313,10 +313,55 @@ var DeckOfCards;
 (function (DeckOfCards) {
     var ViewModel;
     (function (ViewModel) {
+        var MouseButton;
+        (function (MouseButton) {
+            MouseButton[MouseButton["LeftButton"] = 1] = "LeftButton";
+            MouseButton[MouseButton["MiddleButton"] = 2] = "MiddleButton";
+            MouseButton[MouseButton["RightButton"] = 3] = "RightButton";
+        })(MouseButton || (MouseButton = {}));
         var AddCardsViewModel = (function () {
             function AddCardsViewModel() {
                 var _this = this;
                 this.isVisible = ko.observable(false);
+                this.suits = [];
+                this.cardMousedown = function (card, ev) {
+                    if (ev.which === MouseButton.LeftButton) {
+                        card.count(card.count() + 1);
+                    }
+                    else if (ev.which === MouseButton.MiddleButton) {
+                        card.count(0);
+                    }
+                    else if (ev.which === MouseButton.RightButton) {
+                        if (card.count() > 0) {
+                            card.count(card.count() - 1);
+                        }
+                    }
+                    ev.preventDefault();
+                    return false;
+                };
+                this.addFullDeck = function () {
+                    _this.suits.forEach(function (suit) {
+                        suit.cards.forEach(function (card) {
+                            card.count(card.count() + 1);
+                        });
+                    });
+                };
+                this.clearAll = function () {
+                    _this.suits.forEach(function (suit) {
+                        suit.cards.forEach(function (card) {
+                            card.count(0);
+                        });
+                    });
+                };
+                this.totalCount = ko.pureComputed(function () {
+                    var total = 0;
+                    _this.suits.forEach(function (suit) {
+                        suit.cards.forEach(function (card) {
+                            total = total + card.count();
+                        });
+                    });
+                    return total;
+                });
                 this.closeModal = function () {
                     _this.isVisible(false);
                 };
@@ -326,6 +371,58 @@ var DeckOfCards;
                     throw 'AddCardsViewModel is a singleton and has already been instantiated.  Use AddCardsViewModel.Instance instead.';
                 }
                 AddCardsViewModel.Instance = this;
+                this.suits = [
+                    {
+                        name: 'Spades',
+                        cards: []
+                    },
+                    {
+                        name: 'Hearts',
+                        cards: []
+                    },
+                    {
+                        name: 'Diamonds',
+                        cards: []
+                    },
+                    {
+                        name: 'Clubs',
+                        cards: []
+                    },
+                    {
+                        name: 'Jokers',
+                        cards: []
+                    },
+                ];
+                this.suits.forEach(function (suit) {
+                    if (suit.name !== 'Jokers') {
+                        for (var i = 2; i <= 10; i++) {
+                            suit.cards.push({
+                                name: i.toString(),
+                                imageUrl: suit.name.toLowerCase() + '/' + i + '.svg',
+                                count: ko.observable(0)
+                            });
+                        }
+                        ['Jack', 'Queen', 'King', 'Ace'].forEach(function (faceCard) {
+                            suit.cards.push({
+                                name: faceCard,
+                                imageUrl: suit.name.toLowerCase() + '/' + faceCard.toLowerCase() + '.svg',
+                                count: ko.observable(0)
+                            });
+                        });
+                    }
+                    else {
+                        suit.cards.push({
+                            name: 'Black Joker',
+                            imageUrl: 'blackjoker.svg',
+                            count: ko.observable(0)
+                        });
+                        suit.cards.push({
+                            name: 'Red Joker',
+                            imageUrl: 'redjoker.svg',
+                            count: ko.observable(0)
+                        });
+                    }
+                });
             }
             AddCardsViewModel.ShowModal = function () {
                 AddCardsViewModel.Instance.isVisible(true);

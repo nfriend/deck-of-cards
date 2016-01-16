@@ -54,6 +54,18 @@ body {
 .modal-header h4 {
   margin: 0;
 }
+.cleared {
+  clear: both;
+  float: none;
+}
+.no-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 chat {
   float: right;
   position: relative;
@@ -236,4 +248,45 @@ info-modal .indented {
   margin-left: 15px;
   margin-top: 5px;
   color: gray;
+}
+add-cards-modal .card-container .suit-container {
+  text-align: center;
+}
+add-cards-modal .card-container .suit-container .card {
+  position: relative;
+  display: inline-block;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 250ms ease-out;
+}
+add-cards-modal .card-container .suit-container .card .image-container {
+  width: 100px;
+  position: relative;
+}
+add-cards-modal .card-container .suit-container .card .image-container img {
+  width: 100px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+add-cards-modal .card-container .suit-container .card .image-container .card-selected-overlay {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid #333;
+  border-radius: 6px;
+  visibility: hidden;
+}
+add-cards-modal .card-container .suit-container .card .image-container .card-selected-overlay .card-count {
+  margin-top: 28px;
+  font-size: 4em;
+  color: white;
+}
+add-cards-modal .card-container .suit-container .card .image-container .card-selected-overlay.visible {
+  visibility: visible;
+}
+add-cards-modal .card-container .suit-container .card:active {
+  transform: scale(0.93, 0.93);
+  transition: none;
 }

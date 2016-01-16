@@ -1,5 +1,6 @@
 <div data-bind="modal: {
     visible: isVisible,
+    dialogCss: 'modal-lg',
     header: { name: 'add-cards-modal-header-template', data: $data },
     body: { name: 'add-cards-modal-body-template', data: $data },
     footer: { name: 'add-cards-modal-footer-template', data: $data },
@@ -11,10 +12,29 @@
 </script>
 
 <script type="text/html" id="add-cards-modal-body-template">
-    body
+    <p>Click on a card to add one more of that card to the board. Right-click to remove. When you are finished with your selections,
+        click the "Add Cards" button.</p>
+    <div style="text-align: center;">
+        <button class="btn btn-default" data-bind="click: addFullDeck">Add full deck</button>
+        <button class="btn btn-default" data-bind="click: clearAll">Clear all</button>
+    </div>
+    <div class="card-container no-select" data-bind="foreach: { data: suits, as: 'suit' }">
+        <hr />
+        <div class="suit-container no-select" data-bind="foreach: { data: suit.cards, as: 'card' }">
+            <div class="card no-select" data-bind="event: { mousedown: function(data, ev) { return $parents[1].cardMousedown(card, ev); }, contextmenu: function() { return false; }  }">
+                <div class="image-container no-select">
+                    <img data-bind="attr: { src: 'images/cards/' + card.imageUrl, alt: card.name }" />
+                    <div class="card-selected-overlay" data-bind="css: { visible: card.count() > 0 }">
+                        <div class="card-count no-select" data-bind="text: card.count()"><div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="cleared"></div>
+    </div>
 </script>
 
 <script type="text/html" id="add-cards-modal-footer-template">
-    <button class="btn btn-primary" data-bind="click: addCardsButtonClicked"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add Cards</button>
+    <button class="btn btn-primary" data-bind="click: addCardsButtonClicked, disable: totalCount() === 0"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add Cards</button>
     <button class="btn btn-default" data-bind="click: closeModal">Cancel</button>
 </script>
