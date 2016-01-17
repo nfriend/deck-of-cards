@@ -5,4 +5,13 @@ module DeckOfCards {
         color: string;
         orientation: number;
     }
+    
+    export interface Object3DCard extends THREE.Object3D {
+        card?: Card;
+    }
+    
+    export interface Dimensions {
+        x: number,
+        y: number
+    }
 }

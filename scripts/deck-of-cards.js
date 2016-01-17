@@ -1060,6 +1060,99 @@ var DeckOfCards;
         Globals.cookieSettings = { expires: 365, path: '/' };
     })(Globals = DeckOfCards.Globals || (DeckOfCards.Globals = {}));
 })(DeckOfCards || (DeckOfCards = {}));
+var DeckOfCards;
+(function (DeckOfCards) {
+    var Model;
+    (function (Model) {
+        var CardModel = (function () {
+            function CardModel(scene, boardDimensions, allCards) {
+                var _this = this;
+                this.addCards = function (cards) {
+                    var deferred = $.Deferred();
+                    var cardsToAdd = [];
+                    DeckOfCards.Globals.cards().forEach(function (card) {
+                        if (!_this.allCards[card.id]) {
+                            cardsToAdd.push(card);
+                        }
+                    });
+                    var backTextureUrl = 'images/cards/vector/back.svg';
+                    var frontTexturesUrls = cardsToAdd.map(function (c) {
+                        return 'images/cards/vector/' + DeckOfCards.cardToImagePath[c.suit][c.value];
+                    });
+                    $.when(DeckOfCards.loadTextures(frontTexturesUrls), DeckOfCards.loadTexture(backTextureUrl)).then(function (frontTextures, backTexture) {
+                        _this.onTexturesLoaded(cardsToAdd, frontTextures, backTexture);
+                        deferred.resolve();
+                    });
+                    return deferred;
+                };
+                this.onTexturesLoaded = function (cardsToAdd, frontTextures, backTexture) {
+                    frontTextures.forEach(function (texture, index) {
+                        var object3dCard = new THREE.Object3D;
+                        object3dCard.card = cardsToAdd[index];
+                        var frontGeometry = new THREE.PlaneGeometry(170, 237), frontMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: texture, transparent: true }), frontMesh = new THREE.Mesh(frontGeometry, frontMaterial);
+                        var backGeometry = new THREE.PlaneGeometry(170, 237), backMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: backTexture, transparent: true }), backMesh = new THREE.Mesh(backGeometry, backMaterial);
+                        backGeometry.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI));
+                        object3dCard.add(frontMesh);
+                        object3dCard.add(backMesh);
+                        object3dCard.position.set(object3dCard.card.position.x * _this.boardDimensions.x * .01 / 2, object3dCard.card.position.y * _this.boardDimensions.y * .01 / 2, object3dCard.card.zIndex);
+                        _this.allCards[object3dCard.card.id] = object3dCard;
+                        _this.scene.add(object3dCard);
+                    });
+                };
+                this.scene = scene;
+                this.boardDimensions = boardDimensions;
+                this.allCards = allCards;
+            }
+            return CardModel;
+        })();
+        Model.CardModel = CardModel;
+    })(Model = DeckOfCards.Model || (DeckOfCards.Model = {}));
+})(DeckOfCards || (DeckOfCards = {}));
+/// <reference path="./CardModel" />
+var DeckOfCards;
+(function (DeckOfCards) {
+    var Model;
+    (function (Model) {
+        var InitializationModel = (function () {
+            function InitializationModel(boardContainerSelector) {
+                var _this = this;
+                this.drawScene = function () {
+                    _this.scene = new THREE.Scene();
+                    _this.raycaster = new THREE.Raycaster();
+                    _this.$boardContainer = $('#board-container');
+                    _this.allCards = {};
+                    _this.boardDimensions = {
+                        x: _this.$boardContainer.innerWidth(),
+                        y: _this.$boardContainer.innerHeight()
+                    };
+                    _this.cardModel = new Model.CardModel(_this.scene, _this.boardDimensions, _this.allCards);
+                    _this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                    _this.renderer.setSize(_this.boardDimensions.x, _this.boardDimensions.y);
+                    _this.$boardContainer.append(_this.renderer.domElement);
+                    _this.camera = new THREE.PerspectiveCamera(20, _this.boardDimensions.x / _this.boardDimensions.y, 1, 5000);
+                    var light = new THREE.DirectionalLight(0xffffff);
+                    light.position.set(0, 1, 1).normalize();
+                    _this.scene.add(light);
+                    _this.camera.position.z = 3000;
+                    DeckOfCards.Globals.cards.subscribe(function () {
+                        _this.cardModel.addCards(DeckOfCards.Globals.cards());
+                    });
+                    _this.animate();
+                };
+                this.animate = function () {
+                    requestAnimationFrame(_this.animate);
+                    _this.render();
+                };
+                this.render = function () {
+                    _this.renderer.render(_this.scene, _this.camera);
+                };
+                this.boardContainerSelector = boardContainerSelector;
+            }
+            return InitializationModel;
+        })();
+        Model.InitializationModel = InitializationModel;
+    })(Model = DeckOfCards.Model || (DeckOfCards.Model = {}));
+})(DeckOfCards || (DeckOfCards = {}));
 /// <reference path="loaders" />
 /// <reference path="log" />
 /// <reference path="./viewModel/DeckOfCardsViewModel" />
@@ -1074,78 +1167,14 @@ var DeckOfCards;
 /// <reference path="./knockout-extensions" />
 /// <reference path="./global" />
 /// <reference path="./cardToImagePath" />
+/// <reference path="./model/InitializationModel" />
 var DeckOfCards;
 (function (DeckOfCards) {
     init();
     function init() {
-        drawScene();
+        new DeckOfCards.Model.InitializationModel('#board-container').drawScene();
         setUpGlobalInfo();
         startKnockout();
-    }
-    function drawScene() {
-        var scene = new THREE.Scene();
-        var raycaster = new THREE.Raycaster();
-        var cards = [];
-        var $boardContainer = $('#board-container');
-        var boardDimensions = {
-            x: $boardContainer.innerWidth(),
-            y: $boardContainer.innerHeight()
-        };
-        console.log(boardDimensions);
-        var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setSize(boardDimensions.x, boardDimensions.y);
-        $boardContainer.append(renderer.domElement);
-        var camera = new THREE.PerspectiveCamera(20, boardDimensions.x / boardDimensions.y, 1, 5000);
-        var light = new THREE.DirectionalLight(0xffffff);
-        light.position.set(0, 1, 1).normalize();
-        scene.add(light);
-        camera.position.z = 3000;
-        DeckOfCards.Globals.cards.subscribe(function () {
-            var cardsToAdd = [];
-            DeckOfCards.Globals.cards().forEach(function (card) {
-                var cardAlreadyExists = false;
-                cards.forEach(function (object3dCard) {
-                    if (object3dCard.card.id === card.id) {
-                        cardAlreadyExists = true;
-                    }
-                });
-                if (!cardAlreadyExists) {
-                    cardsToAdd.push(card);
-                }
-            });
-            DeckOfCards.log('cardsToAdd', cardsToAdd);
-            DeckOfCards.loadTextures(cardsToAdd.map(function (c) {
-                if (typeof DeckOfCards.cardToImagePath[c.suit][c.value] === 'undefined') {
-                    console.log(c);
-                }
-                return 'images/cards/vector/' + DeckOfCards.cardToImagePath[c.suit][c.value];
-            })).then(function (textures) {
-                DeckOfCards.log('textures', textures.length);
-                textures.forEach(function (texture, index) {
-                    var card = new THREE.Object3D;
-                    card.card = cardsToAdd[index];
-                    // temporary
-                    var backTexture = texture;
-                    var frontGeometry = new THREE.PlaneGeometry(170, 237), frontMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: texture, transparent: true }), frontMesh = new THREE.Mesh(frontGeometry, frontMaterial);
-                    var backGeometry = new THREE.PlaneGeometry(170, 237), backMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: backTexture, transparent: true }), backMesh = new THREE.Mesh(backGeometry, backMaterial);
-                    backGeometry.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI));
-                    card.add(frontMesh);
-                    card.add(backMesh);
-                    var factor = 600;
-                    card.position.set(card.card.position.x * boardDimensions.x * .01 / 2, card.card.position.y * boardDimensions.y * .01 / 2, card.card.zIndex);
-                    cards.push(card);
-                    scene.add(card);
-                });
-            });
-        });
-        animate();
-        function animate() {
-            requestAnimationFrame(animate);
-            render();
-        }
-        function render() {
-            renderer.render(scene, camera);
-        }
     }
     function setUpGlobalInfo() {
         DeckOfCards.Globals.playerId(Cookies.get('playerId') || DeckOfCards.Utility.newGuid());
