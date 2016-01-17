@@ -2,15 +2,13 @@ module DeckOfCards.Model {
 
     export class CardModel {
 
-        scene: THREE.Scene;
-        boardDimensions: Dimensions;
-        allCards: {
+        private scene: THREE.Scene;
+        private allCards: {
             [cardId: string]: Object3DCard
         };
 
-        constructor(scene: THREE.Scene, boardDimensions: Dimensions, allCards: { [cardId: string]: Object3DCard }) {
+        constructor(scene: THREE.Scene, allCards: { [cardId: string]: Object3DCard }) {
             this.scene = scene;
-            this.boardDimensions = boardDimensions;
             this.allCards = allCards;
         }
 
@@ -40,6 +38,17 @@ module DeckOfCards.Model {
             return deferred;
         }
 
+        updateCardPositions = () => {
+            Object.keys(this.allCards).forEach(key => {
+                let object3dCard = this.allCards[key];
+                object3dCard.position.set(
+                    object3dCard.card.position.x * Globals.boardDimensions().x * .01 / 2,
+                    object3dCard.card.position.y * Globals.boardDimensions().y * .01 / 2,
+                    object3dCard.card.zIndex
+                );
+            });
+        }
+
         private onTexturesLoaded = (cardsToAdd: Card[], frontTextures: THREE.Texture[], backTexture: THREE.Texture) => {
             frontTextures.forEach((texture, index) => {
                 let object3dCard: Object3DCard = new THREE.Object3D;
@@ -58,15 +67,11 @@ module DeckOfCards.Model {
                 object3dCard.add(frontMesh);
                 object3dCard.add(backMesh);
 
-                object3dCard.position.set(
-                    object3dCard.card.position.x * this.boardDimensions.x * .01 / 2,
-                    object3dCard.card.position.y * this.boardDimensions.y * .01 / 2,
-                    object3dCard.card.zIndex
-                );
-
                 this.allCards[object3dCard.card.id] = object3dCard;
                 this.scene.add(object3dCard);
             });
+            
+            this.updateCardPositions();
         }
     }
 }

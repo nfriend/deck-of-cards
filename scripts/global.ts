@@ -8,4 +8,9 @@ module DeckOfCards.Globals {
     export var cards: KnockoutObservableArray<Card> = ko.observableArray([]);
     
     export var cookieSettings = { expires: 365, path: '/' };
+    
+    export var boardDimensions: KnockoutObservable<Dimensions> = ko.observable({
+        x: 0,
+        y: 0
+    }).extend({ rateLimit: { timeout: 200, method: 'notifyWhenChangesStop' } });
 }
