@@ -134,6 +134,75 @@ var DeckOfCards;
     DeckOfCards.WebsocketService = WebsocketService;
     new WebsocketService();
 })(DeckOfCards || (DeckOfCards = {}));
+var DeckOfCards;
+(function (DeckOfCards) {
+    DeckOfCards.cardToImagePath = {
+        1: {
+            1: 'spades/ace.svg',
+            2: 'spades/2.svg',
+            3: 'spades/3.svg',
+            4: 'spades/4.svg',
+            5: 'spades/5.svg',
+            6: 'spades/6.svg',
+            7: 'spades/7.svg',
+            8: 'spades/8.svg',
+            9: 'spades/9.svg',
+            10: 'spades/10.svg',
+            11: 'spades/jack.svg',
+            12: 'spades/queen.svg',
+            13: 'spades/king.svg',
+        },
+        2: {
+            1: 'diamonds/ace.svg',
+            2: 'diamonds/2.svg',
+            3: 'diamonds/3.svg',
+            4: 'diamonds/4.svg',
+            5: 'diamonds/5.svg',
+            6: 'diamonds/6.svg',
+            7: 'diamonds/7.svg',
+            8: 'diamonds/8.svg',
+            9: 'diamonds/9.svg',
+            10: 'diamonds/10.svg',
+            11: 'diamonds/jack.svg',
+            12: 'diamonds/queen.svg',
+            13: 'diamonds/king.svg',
+        },
+        3: {
+            1: 'hearts/ace.svg',
+            2: 'hearts/2.svg',
+            3: 'hearts/3.svg',
+            4: 'hearts/4.svg',
+            5: 'hearts/5.svg',
+            6: 'hearts/6.svg',
+            7: 'hearts/7.svg',
+            8: 'hearts/8.svg',
+            9: 'hearts/9.svg',
+            10: 'hearts/10.svg',
+            11: 'hearts/jack.svg',
+            12: 'hearts/queen.svg',
+            13: 'hearts/king.svg',
+        },
+        4: {
+            1: 'clubs/ace.svg',
+            2: 'clubs/2.svg',
+            3: 'clubs/3.svg',
+            4: 'clubs/4.svg',
+            5: 'clubs/5.svg',
+            6: 'clubs/6.svg',
+            7: 'clubs/7.svg',
+            8: 'clubs/8.svg',
+            9: 'clubs/9.svg',
+            10: 'clubs/10.svg',
+            11: 'clubs/jack.svg',
+            12: 'clubs/queen.svg',
+            13: 'clubs/king.svg',
+        },
+        5: {
+            14: 'blackjoker.svg',
+            15: 'redjoker.svg',
+        }
+    };
+})(DeckOfCards || (DeckOfCards = {}));
 /// <reference path="../typings/deck-of-cards-server/Messages" />
 /// <reference path="../WebsocketService" />
 var DeckOfCards;
@@ -309,6 +378,35 @@ var DeckOfCards;
         ViewModel.ToolbarViewModel = ToolbarViewModel;
     })(ViewModel = DeckOfCards.ViewModel || (DeckOfCards.ViewModel = {}));
 })(DeckOfCards || (DeckOfCards = {}));
+var Suit;
+(function (Suit) {
+    Suit[Suit["Spades"] = 1] = "Spades";
+    Suit[Suit["Diamonds"] = 2] = "Diamonds";
+    Suit[Suit["Hearts"] = 3] = "Hearts";
+    Suit[Suit["Clubs"] = 4] = "Clubs";
+    Suit[Suit["Jokers"] = 5] = "Jokers";
+})(Suit || (Suit = {}));
+var CardValue;
+(function (CardValue) {
+    CardValue[CardValue["Ace"] = 1] = "Ace";
+    CardValue[CardValue["Two"] = 2] = "Two";
+    CardValue[CardValue["Three"] = 3] = "Three";
+    CardValue[CardValue["Four"] = 4] = "Four";
+    CardValue[CardValue["Five"] = 5] = "Five";
+    CardValue[CardValue["Six"] = 6] = "Six";
+    CardValue[CardValue["Seven"] = 7] = "Seven";
+    CardValue[CardValue["Eight"] = 8] = "Eight";
+    CardValue[CardValue["Nine"] = 9] = "Nine";
+    CardValue[CardValue["Ten"] = 10] = "Ten";
+    CardValue[CardValue["Jack"] = 11] = "Jack";
+    CardValue[CardValue["Queen"] = 12] = "Queen";
+    CardValue[CardValue["King"] = 13] = "King";
+    CardValue[CardValue["BlackJoker"] = 14] = "BlackJoker";
+    CardValue[CardValue["RedJoker"] = 15] = "RedJoker";
+})(CardValue || (CardValue = {}));
+/// <reference path="../../typings/deck-of-cards-server/Suit" />
+/// <reference path="../../typings/deck-of-cards-server/CardValue" />
+/// <reference path="../../typings/deck-of-cards-server/Card" />
 var DeckOfCards;
 (function (DeckOfCards) {
     var ViewModel;
@@ -366,6 +464,29 @@ var DeckOfCards;
                     _this.isVisible(false);
                 };
                 this.addCardsButtonClicked = function () {
+                    var cards = [];
+                    _this.suits.forEach(function (suit) {
+                        suit.cards.forEach(function (card) {
+                            for (var i = 0; i < card.count(); i++) {
+                                cards.push({
+                                    suit: suit.suitEnum,
+                                    value: card.cardValueEnum,
+                                    // these are all filled in by the server
+                                    id: null,
+                                    position: null,
+                                    rotation: null,
+                                    zIndex: null
+                                });
+                            }
+                        });
+                    });
+                    var addCardsMessage = {
+                        messageType: 'addCards',
+                        data: {
+                            cards: cards
+                        }
+                    };
+                    DeckOfCards.WebsocketService.Instance.send(addCardsMessage);
                     _this.closeModal();
                 };
                 if (AddCardsViewModel.Instance) {
@@ -375,23 +496,28 @@ var DeckOfCards;
                 this.suits = [
                     {
                         name: 'Spades',
-                        cards: []
+                        cards: [],
+                        suitEnum: Suit.Spades
                     },
                     {
                         name: 'Hearts',
-                        cards: []
+                        cards: [],
+                        suitEnum: Suit.Spades
                     },
                     {
                         name: 'Diamonds',
-                        cards: []
+                        cards: [],
+                        suitEnum: Suit.Diamonds
                     },
                     {
                         name: 'Clubs',
-                        cards: []
+                        cards: [],
+                        suitEnum: Suit.Clubs
                     },
                     {
                         name: 'Jokers',
-                        cards: []
+                        cards: [],
+                        suitEnum: Suit.Jokers
                     },
                 ];
                 this.suits.forEach(function (suit) {
@@ -400,27 +526,47 @@ var DeckOfCards;
                             suit.cards.push({
                                 name: i.toString(),
                                 imageUrl: suit.name.toLowerCase() + '/' + i + '.svg',
-                                count: ko.observable(0)
+                                count: ko.observable(0),
+                                cardValueEnum: i
                             });
                         }
-                        ['Jack', 'Queen', 'King', 'Ace'].forEach(function (faceCard) {
-                            suit.cards.push({
-                                name: faceCard,
-                                imageUrl: suit.name.toLowerCase() + '/' + faceCard.toLowerCase() + '.svg',
-                                count: ko.observable(0)
-                            });
+                        suit.cards.push({
+                            name: 'Jack',
+                            imageUrl: suit.name.toLowerCase() + '/jack.svg',
+                            count: ko.observable(0),
+                            cardValueEnum: CardValue.Jack
+                        });
+                        suit.cards.push({
+                            name: 'Queen',
+                            imageUrl: suit.name.toLowerCase() + '/queen.svg',
+                            count: ko.observable(0),
+                            cardValueEnum: CardValue.Queen
+                        });
+                        suit.cards.push({
+                            name: 'King',
+                            imageUrl: suit.name.toLowerCase() + '/king.svg',
+                            count: ko.observable(0),
+                            cardValueEnum: CardValue.King
+                        });
+                        suit.cards.push({
+                            name: 'Ace',
+                            imageUrl: suit.name.toLowerCase() + '/ace.svg',
+                            count: ko.observable(0),
+                            cardValueEnum: CardValue.Ace
                         });
                     }
                     else {
                         suit.cards.push({
                             name: 'Black Joker',
                             imageUrl: 'blackjoker.svg',
-                            count: ko.observable(0)
+                            count: ko.observable(0),
+                            cardValueEnum: CardValue.BlackJoker
                         });
                         suit.cards.push({
                             name: 'Red Joker',
                             imageUrl: 'redjoker.svg',
-                            count: ko.observable(0)
+                            count: ko.observable(0),
+                            cardValueEnum: CardValue.RedJoker
                         });
                     }
                 });
@@ -590,7 +736,6 @@ var DeckOfCards;
             function DeckOfCardsViewModel() {
                 var _this = this;
                 this.onUpdatePlayersMessage = function (message) {
-                    DeckOfCards.log('updating all players', message);
                     DeckOfCards.Globals.players.removeAll();
                     DeckOfCards.Globals.players.pushRange(message.data.players.map(function (p) {
                         return {
@@ -603,9 +748,16 @@ var DeckOfCards;
                     }));
                     DeckOfCards.log(ko.unwrap(DeckOfCards.Globals.players));
                 };
+                this.onUpdateCardsMessage = function (message) {
+                    DeckOfCards.log('updating all cards', message);
+                    DeckOfCards.Globals.cards(message.data.cards);
+                };
                 DeckOfCards.WebsocketService.Instance.on('receive', function (wsMessage) {
                     if (wsMessage.messageType === 'updatePlayers') {
                         _this.onUpdatePlayersMessage(wsMessage);
+                    }
+                    else if (wsMessage.messageType === 'updateCards') {
+                        _this.onUpdateCardsMessage(wsMessage);
                     }
                 });
                 var joinMessage = {
@@ -904,6 +1056,7 @@ var DeckOfCards;
         Globals.playerColor = ko.observable(null);
         Globals.gameId = ko.observable(null);
         Globals.players = ko.observableArray([]);
+        Globals.cards = ko.observableArray([]);
         Globals.cookieSettings = { expires: 365, path: '/' };
     })(Globals = DeckOfCards.Globals || (DeckOfCards.Globals = {}));
 })(DeckOfCards || (DeckOfCards = {}));
@@ -920,6 +1073,7 @@ var DeckOfCards;
 /// <reference path="./utility" />
 /// <reference path="./knockout-extensions" />
 /// <reference path="./global" />
+/// <reference path="./cardToImagePath" />
 var DeckOfCards;
 (function (DeckOfCards) {
     init();
@@ -930,14 +1084,61 @@ var DeckOfCards;
     }
     function drawScene() {
         var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 1, 5000);
         var raycaster = new THREE.Raycaster();
+        var cards = [];
+        var $boardContainer = $('#board-container');
+        var boardDimensions = {
+            x: $boardContainer.innerWidth(),
+            y: $boardContainer.innerHeight()
+        };
+        console.log(boardDimensions);
         var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        $('#board-container').append(renderer.domElement);
+        renderer.setSize(boardDimensions.x, boardDimensions.y);
+        $boardContainer.append(renderer.domElement);
+        var camera = new THREE.PerspectiveCamera(20, boardDimensions.x / boardDimensions.y, 1, 5000);
         var light = new THREE.DirectionalLight(0xffffff);
         light.position.set(0, 1, 1).normalize();
         scene.add(light);
+        camera.position.z = 3000;
+        DeckOfCards.Globals.cards.subscribe(function () {
+            var cardsToAdd = [];
+            DeckOfCards.Globals.cards().forEach(function (card) {
+                var cardAlreadyExists = false;
+                cards.forEach(function (object3dCard) {
+                    if (object3dCard.card.id === card.id) {
+                        cardAlreadyExists = true;
+                    }
+                });
+                if (!cardAlreadyExists) {
+                    cardsToAdd.push(card);
+                }
+            });
+            DeckOfCards.log('cardsToAdd', cardsToAdd);
+            DeckOfCards.loadTextures(cardsToAdd.map(function (c) {
+                if (typeof DeckOfCards.cardToImagePath[c.suit][c.value] === 'undefined') {
+                    console.log(c);
+                }
+                return 'images/cards/vector/' + DeckOfCards.cardToImagePath[c.suit][c.value];
+            })).then(function (textures) {
+                DeckOfCards.log('textures', textures.length);
+                textures.forEach(function (texture, index) {
+                    var card = new THREE.Object3D;
+                    card.card = cardsToAdd[index];
+                    // temporary
+                    var backTexture = texture;
+                    var frontGeometry = new THREE.PlaneGeometry(170, 237), frontMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: texture, transparent: true }), frontMesh = new THREE.Mesh(frontGeometry, frontMaterial);
+                    var backGeometry = new THREE.PlaneGeometry(170, 237), backMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: backTexture, transparent: true }), backMesh = new THREE.Mesh(backGeometry, backMaterial);
+                    backGeometry.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI));
+                    card.add(frontMesh);
+                    card.add(backMesh);
+                    var factor = 600;
+                    card.position.set(card.card.position.x * boardDimensions.x * .01 / 2, card.card.position.y * boardDimensions.y * .01 / 2, card.card.zIndex);
+                    cards.push(card);
+                    scene.add(card);
+                });
+            });
+        });
+        animate();
         function animate() {
             requestAnimationFrame(animate);
             render();
@@ -965,38 +1166,5 @@ var DeckOfCards;
         ko.options.deferUpdates = true;
         ko.applyBindings(new DeckOfCards.ViewModel.DeckOfCardsViewModel());
     }
-})(DeckOfCards || (DeckOfCards = {}));
-var DeckOfCards;
-(function (DeckOfCards) {
-    (function (Suit) {
-        Suit[Suit["Hearts"] = 0] = "Hearts";
-        Suit[Suit["Diamons"] = 1] = "Diamons";
-        Suit[Suit["Spades"] = 2] = "Spades";
-        Suit[Suit["Clubs"] = 3] = "Clubs";
-    })(DeckOfCards.Suit || (DeckOfCards.Suit = {}));
-    var Suit = DeckOfCards.Suit;
-    (function (CardNumber) {
-        CardNumber[CardNumber["Ace"] = 0] = "Ace";
-        CardNumber[CardNumber["Two"] = 1] = "Two";
-        CardNumber[CardNumber["Three"] = 2] = "Three";
-        CardNumber[CardNumber["Four"] = 3] = "Four";
-        CardNumber[CardNumber["Five"] = 4] = "Five";
-        CardNumber[CardNumber["Six"] = 5] = "Six";
-        CardNumber[CardNumber["Seven"] = 6] = "Seven";
-        CardNumber[CardNumber["Eight"] = 7] = "Eight";
-        CardNumber[CardNumber["Nine"] = 8] = "Nine";
-        CardNumber[CardNumber["Ten"] = 9] = "Ten";
-        CardNumber[CardNumber["Jack"] = 10] = "Jack";
-        CardNumber[CardNumber["Queen"] = 11] = "Queen";
-        CardNumber[CardNumber["King"] = 12] = "King";
-        CardNumber[CardNumber["Joker"] = 13] = "Joker";
-    })(DeckOfCards.CardNumber || (DeckOfCards.CardNumber = {}));
-    var CardNumber = DeckOfCards.CardNumber;
-    (function (ItemType) {
-        ItemType[ItemType["Card"] = 0] = "Card";
-        ItemType[ItemType["PokerChip"] = 1] = "PokerChip";
-        ItemType[ItemType["Penny"] = 2] = "Penny";
-    })(DeckOfCards.ItemType || (DeckOfCards.ItemType = {}));
-    var ItemType = DeckOfCards.ItemType;
 })(DeckOfCards || (DeckOfCards = {}));
 //# sourceMappingURL=deck-of-cards.js.map

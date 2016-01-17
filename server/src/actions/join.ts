@@ -15,7 +15,8 @@ function join(gameIdToGames: GameIdToGame, connection: Connection, message: Mess
         gameIdToGames[gameId] = {
             id: gameId,
             chatHistory: [],
-            connections: []
+            connections: [],
+            cards: []
         };
     }
 

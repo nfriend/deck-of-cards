@@ -40,3 +40,13 @@ interface UpdateMyPlayerInfoMessage extends Message {
         playerColor: string;
     };
 }
+interface AddCardsMessage extends Message {
+    data: {
+        cards: Card[];
+    };
+}
+interface UpdateCardsMessage extends Message {
+    data: {
+        cards: Card[];
+    };
+}

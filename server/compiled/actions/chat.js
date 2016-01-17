@@ -1,7 +1,7 @@
 function chat(gameIdToClients, connection, message) {
     var game = gameIdToClients[connection.gameId];
     if (game) {
-        gameIdToClients[connection.gameId].connections.forEach(function (playerConnection) {
+        game.connections.forEach(function (playerConnection) {
             if (connection !== playerConnection) {
                 playerConnection.sendMessage(message);
             }

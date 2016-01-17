@@ -23,7 +23,7 @@
         <div class="suit-container no-select" data-bind="foreach: { data: suit.cards, as: 'card' }">
             <div class="card no-select" data-bind="event: { mousedown: function(data, ev) { return $parents[1].cardMousedown(card, ev); }, contextmenu: function() { return false; }  }">
                 <div class="image-container no-select">
-                    <img data-bind="attr: { src: 'images/cards/' + card.imageUrl, alt: card.name }" />
+                    <img data-bind="attr: { src: 'images/cards/vector/' + card.imageUrl, alt: card.name }" />
                     <div class="card-selected-overlay" data-bind="css: { visible: card.count() > 0 }">
                         <div class="card-count no-select" data-bind="text: card.count()"></div>
                         <div class="cleared"></div>

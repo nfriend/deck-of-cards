@@ -1,14 +1,20 @@
+/// <reference path="../../typings/deck-of-cards-server/Suit" />
+/// <reference path="../../typings/deck-of-cards-server/CardValue" />
+/// <reference path="../../typings/deck-of-cards-server/Card" />
+
 module DeckOfCards.ViewModel {
 
-    interface Suit {
+    interface SuitForBinding {
         name: string;
-        cards: Card[];
+        cards: CardForBinding[];
+        suitEnum: Suit;
     }
 
-    interface Card {
+    interface CardForBinding {
         name: string;
         imageUrl: string;
         count: KnockoutObservable<number>;
+        cardValueEnum: CardValue;
     }
 
     enum MouseButton {
@@ -20,7 +26,7 @@ module DeckOfCards.ViewModel {
     export class AddCardsViewModel {
 
         isVisible = ko.observable(false);
-        suits: Array<Suit> = [];
+        suits: Array<SuitForBinding> = [];
 
         constructor() {
             if (AddCardsViewModel.Instance) {
@@ -31,23 +37,28 @@ module DeckOfCards.ViewModel {
             this.suits = [
                 {
                     name: 'Spades',
-                    cards: []
+                    cards: [],
+                    suitEnum: Suit.Spades
                 },
                 {
                     name: 'Hearts',
-                    cards: []
+                    cards: [],
+                    suitEnum: Suit.Spades
                 },
                 {
                     name: 'Diamonds',
-                    cards: []
+                    cards: [],
+                    suitEnum: Suit.Diamonds
                 },
                 {
                     name: 'Clubs',
-                    cards: []
+                    cards: [],
+                    suitEnum: Suit.Clubs
                 },
                 {
                     name: 'Jokers',
-                    cards: []
+                    cards: [],
+                    suitEnum: Suit.Jokers
                 },
             ];
 
@@ -57,32 +68,57 @@ module DeckOfCards.ViewModel {
                         suit.cards.push({
                             name: i.toString(),
                             imageUrl: suit.name.toLowerCase() + '/' + i + '.svg',
-                            count: ko.observable(0)
+                            count: ko.observable(0),
+                            cardValueEnum: i
                         });
                     }
-                    ['Jack', 'Queen', 'King', 'Ace'].forEach(faceCard => {
-                        suit.cards.push({
-                            name: faceCard,
-                            imageUrl: suit.name.toLowerCase() + '/' + faceCard.toLowerCase() + '.svg',
-                            count: ko.observable(0)
-                        });
+
+                    suit.cards.push({
+                        name: 'Jack',
+                        imageUrl: suit.name.toLowerCase() + '/jack.svg',
+                        count: ko.observable(0),
+                        cardValueEnum: CardValue.Jack
                     });
+                    
+                    suit.cards.push({
+                        name: 'Queen',
+                        imageUrl: suit.name.toLowerCase() + '/queen.svg',
+                        count: ko.observable(0),
+                        cardValueEnum: CardValue.Queen
+                    });
+                    
+                    suit.cards.push({
+                        name: 'King',
+                        imageUrl: suit.name.toLowerCase() + '/king.svg',
+                        count: ko.observable(0),
+                        cardValueEnum: CardValue.King
+                    });
+                    
+                    suit.cards.push({
+                        name: 'Ace',
+                        imageUrl: suit.name.toLowerCase() + '/ace.svg',
+                        count: ko.observable(0),
+                        cardValueEnum: CardValue.Ace
+                    });
+
                 } else {
                     suit.cards.push({
                         name: 'Black Joker',
                         imageUrl: 'blackjoker.svg',
-                        count: ko.observable(0)
+                        count: ko.observable(0),
+                        cardValueEnum: CardValue.BlackJoker
                     });
                     suit.cards.push({
                         name: 'Red Joker',
                         imageUrl: 'redjoker.svg',
-                        count: ko.observable(0)
+                        count: ko.observable(0),
+                        cardValueEnum: CardValue.RedJoker
                     });
                 }
             });
         }
 
-        cardMousedown = (card: Card, ev: JQueryMouseEventObject) => {
+        cardMousedown = (card: CardForBinding, ev: JQueryMouseEventObject) => {
 
             if (ev.which === MouseButton.LeftButton) {
                 card.count(card.count() + 1);
@@ -97,29 +133,29 @@ module DeckOfCards.ViewModel {
             ev.preventDefault();
             return false;
         }
-        
+
         addFullDeck = () => {
             this.suits.forEach(suit => {
-               suit.cards.forEach(card => {
-                   card.count(card.count() + 1); 
-               });
+                suit.cards.forEach(card => {
+                    card.count(card.count() + 1);
+                });
             });
         }
-        
+
         clearAll = () => {
             this.suits.forEach(suit => {
-               suit.cards.forEach(card => {
-                   card.count(0); 
-               });
+                suit.cards.forEach(card => {
+                    card.count(0);
+                });
             });
         }
-        
+
         totalCount = ko.pureComputed(() => {
             let total = 0;
             this.suits.forEach(suit => {
-               suit.cards.forEach(card => {
-                   total = total + card.count(); 
-               });
+                suit.cards.forEach(card => {
+                    total = total + card.count();
+                });
             });
             return total;
         });
@@ -129,8 +165,33 @@ module DeckOfCards.ViewModel {
         }
 
         addCardsButtonClicked = () => {
-            
-            
+            let cards: Array<Card> = [];
+
+            this.suits.forEach(suit => {
+                suit.cards.forEach(card => {
+                    for (var i = 0; i < card.count(); i++) {
+                        cards.push({
+                            suit: suit.suitEnum,
+                            value: card.cardValueEnum,
+                            
+                            // these are all filled in by the server
+                            id: null,
+                            position: null,
+                            rotation: null,
+                            zIndex: null
+                        });
+                    }
+                });
+            });
+
+            let addCardsMessage: AddCardsMessage = {
+                messageType: 'addCards',
+                data: {
+                    cards: cards
+                }
+            }
+            WebsocketService.Instance.send(addCardsMessage);
+
             this.closeModal();
         }
 

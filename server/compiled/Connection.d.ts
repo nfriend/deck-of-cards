@@ -7,5 +7,5 @@ declare class Connection {
     gameId: string;
     player: Player;
     constructor(connection: websocket.connection);
-    sendMessage(message: Message.JoinMessage | Message.ChatMessage | Message.ChatHistoryMessage | Message.UpdatePlayersMessage | Message.UpdateMyPlayerInfoMessage): void;
+    sendMessage(message: Message.JoinMessage | Message.ChatMessage | Message.ChatHistoryMessage | Message.UpdatePlayersMessage | Message.UpdateMyPlayerInfoMessage | Message.AddCardsMessage): void;
 }

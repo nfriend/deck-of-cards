@@ -293,3 +293,8 @@ add-cards-modal .card-container .suit-container .card:active {
   transform: scale(0.93, 0.93);
   transition: none;
 }
+#board-container {
+  position: relative;
+  height: 100%;
+  cursor: default;
+}

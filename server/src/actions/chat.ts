@@ -8,7 +8,7 @@ function chat(gameIdToClients: GameClientMapping, connection: Connection, messag
 
 	let game = gameIdToClients[connection.gameId]; 
 	if (game) {
-		gameIdToClients[connection.gameId].connections.forEach(playerConnection => {
+		game.connections.forEach(playerConnection => {
 			if (connection !== playerConnection) {
 				playerConnection.sendMessage(message);
 			}

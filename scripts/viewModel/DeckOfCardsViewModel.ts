@@ -7,7 +7,10 @@ module DeckOfCards.ViewModel {
             WebsocketService.Instance.on('receive', (wsMessage: Message) => {
                 if (wsMessage.messageType === 'updatePlayers') {
                     this.onUpdatePlayersMessage(wsMessage);
+                } else if (wsMessage.messageType === 'updateCards') {
+                    this.onUpdateCardsMessage(wsMessage);
                 }
+                    
             });
 
             let joinMessage: JoinMessage = {
@@ -31,7 +34,6 @@ module DeckOfCards.ViewModel {
         }
 
         onUpdatePlayersMessage = (message: UpdatePlayersMessage) => {
-            log('updating all players', message);
             Globals.players.removeAll();
             Globals.players.pushRange(message.data.players.map(p => {
                 return {
@@ -44,6 +46,11 @@ module DeckOfCards.ViewModel {
                 }
             }));
             log(ko.unwrap(Globals.players));
+        }
+        
+        onUpdateCardsMessage = (message: UpdateCardsMessage) => {
+            log('updating all cards', message);
+            Globals.cards(message.data.cards);
         }
     }
 }

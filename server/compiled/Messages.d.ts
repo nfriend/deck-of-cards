@@ -1,3 +1,4 @@
+import Card = require('./Card');
 export interface Message {
     messageType: string;
     data: any;
@@ -38,5 +39,15 @@ export interface UpdateMyPlayerInfoMessage extends Message {
     data: {
         playerName: string;
         playerColor: string;
+    };
+}
+export interface AddCardsMessage extends Message {
+    data: {
+        cards: Card[];
+    };
+}
+export interface UpdateCardsMessage extends Message {
+    data: {
+        cards: Card[];
     };
 }

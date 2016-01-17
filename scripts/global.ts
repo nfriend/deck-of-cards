@@ -5,6 +5,7 @@ module DeckOfCards.Globals {
     
     export var gameId: KnockoutObservable<string> = ko.observable(null);
     export var players: KnockoutObservableArray<Player> = ko.observableArray([]);
+    export var cards: KnockoutObservableArray<Card> = ko.observableArray([]);
     
     export var cookieSettings = { expires: 365, path: '/' };
 }
