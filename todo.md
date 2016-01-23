@@ -10,3 +10,7 @@ TODO
 - smarter image loading?  Currently, everything all card images are loaded on AddCardsViewModel instantiation
 
 - What happens to chat messages once the player leaves disconnects?
+
+- Change SVGs to PNGs - this will fix the strange resizing in Firefox
+
+- Switch background from a background image to an actual THREE.js object (it should be the plane that's used for hit testing when dragging)

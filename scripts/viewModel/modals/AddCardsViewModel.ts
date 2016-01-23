@@ -43,7 +43,7 @@ module DeckOfCards.ViewModel {
                 {
                     name: 'Hearts',
                     cards: [],
-                    suitEnum: Suit.Spades
+                    suitEnum: Suit.Hearts
                 },
                 {
                     name: 'Diamonds',

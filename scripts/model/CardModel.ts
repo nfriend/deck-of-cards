@@ -24,6 +24,7 @@ module DeckOfCards.Model {
 
             let backTextureUrl = 'images/cards/vector/back.svg';
             let frontTexturesUrls = cardsToAdd.map(c => {
+                //return 'images/cards/raster/pngtest.png';
                 return 'images/cards/vector/' + cardToImagePath[c.suit][c.value];
             });
 
@@ -41,9 +42,13 @@ module DeckOfCards.Model {
         updateCardPositions = () => {
             Object.keys(this.allCards).forEach(key => {
                 let object3dCard = this.allCards[key];
+                let factor = {
+                    x: 300,
+                    y: 200
+                }
                 object3dCard.position.set(
-                    object3dCard.card.position.x * Globals.boardDimensions().x * .01 / 2,
-                    object3dCard.card.position.y * Globals.boardDimensions().y * .01 / 2,
+                    object3dCard.card.position.x * 0.01 * factor.x,
+                    object3dCard.card.position.y * 0.01 * factor.y,
                     object3dCard.card.zIndex
                 );
             });
@@ -54,11 +59,11 @@ module DeckOfCards.Model {
                 let object3dCard: Object3DCard = new THREE.Object3D;
                 object3dCard.card = cardsToAdd[index];
 
-                let frontGeometry = new THREE.PlaneGeometry(170, 237),
+                let frontGeometry = new THREE.PlaneGeometry(350, 489),
                     frontMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: texture, transparent: true }),
                     frontMesh = new THREE.Mesh(frontGeometry, frontMaterial);
 
-                let backGeometry = new THREE.PlaneGeometry(170, 237),
+                let backGeometry = new THREE.PlaneGeometry(350, 489),
                     backMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: backTexture, transparent: true }),
                     backMesh = new THREE.Mesh(backGeometry, backMaterial);
 
@@ -70,7 +75,7 @@ module DeckOfCards.Model {
                 this.allCards[object3dCard.card.id] = object3dCard;
                 this.scene.add(object3dCard);
             });
-            
+
             this.updateCardPositions();
         }
     }

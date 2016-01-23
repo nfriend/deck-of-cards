@@ -502,7 +502,7 @@ var DeckOfCards;
                     {
                         name: 'Hearts',
                         cards: [],
-                        suitEnum: Suit.Spades
+                        suitEnum: Suit.Hearts
                     },
                     {
                         name: 'Diamonds',
@@ -1081,6 +1081,7 @@ var DeckOfCards;
                     });
                     var backTextureUrl = 'images/cards/vector/back.svg';
                     var frontTexturesUrls = cardsToAdd.map(function (c) {
+                        //return 'images/cards/raster/pngtest.png';
                         return 'images/cards/vector/' + DeckOfCards.cardToImagePath[c.suit][c.value];
                     });
                     $.when(DeckOfCards.loadTextures(frontTexturesUrls), DeckOfCards.loadTexture(backTextureUrl)).then(function (frontTextures, backTexture) {
@@ -1092,15 +1093,19 @@ var DeckOfCards;
                 this.updateCardPositions = function () {
                     Object.keys(_this.allCards).forEach(function (key) {
                         var object3dCard = _this.allCards[key];
-                        object3dCard.position.set(object3dCard.card.position.x * DeckOfCards.Globals.boardDimensions().x * .01 / 2, object3dCard.card.position.y * DeckOfCards.Globals.boardDimensions().y * .01 / 2, object3dCard.card.zIndex);
+                        var factor = {
+                            x: 300,
+                            y: 200
+                        };
+                        object3dCard.position.set(object3dCard.card.position.x * 0.01 * factor.x, object3dCard.card.position.y * 0.01 * factor.y, object3dCard.card.zIndex);
                     });
                 };
                 this.onTexturesLoaded = function (cardsToAdd, frontTextures, backTexture) {
                     frontTextures.forEach(function (texture, index) {
                         var object3dCard = new THREE.Object3D;
                         object3dCard.card = cardsToAdd[index];
-                        var frontGeometry = new THREE.PlaneGeometry(170, 237), frontMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: texture, transparent: true }), frontMesh = new THREE.Mesh(frontGeometry, frontMaterial);
-                        var backGeometry = new THREE.PlaneGeometry(170, 237), backMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: backTexture, transparent: true }), backMesh = new THREE.Mesh(backGeometry, backMaterial);
+                        var frontGeometry = new THREE.PlaneGeometry(350, 489), frontMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: texture, transparent: true }), frontMesh = new THREE.Mesh(frontGeometry, frontMaterial);
+                        var backGeometry = new THREE.PlaneGeometry(350, 489), backMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: backTexture, transparent: true }), backMesh = new THREE.Mesh(backGeometry, backMaterial);
                         backGeometry.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI));
                         object3dCard.add(frontMesh);
                         object3dCard.add(backMesh);
@@ -1125,6 +1130,7 @@ var DeckOfCards;
         var InitializationModel = (function () {
             function InitializationModel(boardContainerSelector) {
                 var _this = this;
+                this.selectedObject = null;
                 this.drawScene = function () {
                     _this.scene = new THREE.Scene();
                     _this.raycaster = new THREE.Raycaster();
@@ -1133,15 +1139,18 @@ var DeckOfCards;
                     _this.updateBoardDimensions();
                     var boardDimensions = DeckOfCards.Globals.boardDimensions();
                     _this.cardModel = new Model.CardModel(_this.scene, _this.allCards);
-                    _this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                    _this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, devicePixelRatio: window.devicePixelRatio || 1 });
                     _this.renderer.setSize(boardDimensions.x, boardDimensions.y);
                     _this.$boardContainer.append(_this.renderer.domElement);
-                    _this.camera = new THREE.PerspectiveCamera(20, boardDimensions.x / boardDimensions.y, 1, 5000);
+                    _this.camera = new THREE.PerspectiveCamera(20, boardDimensions.x / boardDimensions.y, 1, 10000);
+                    _this.configureControls(_this.camera);
+                    _this.plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(10000, 10000, 8, 8), new THREE.MeshBasicMaterial({ visible: false }));
+                    _this.scene.add(_this.plane);
                     var light = new THREE.DirectionalLight(0xffffff);
                     light.position.set(0, 1, 1).normalize();
                     _this.scene.add(light);
-                    _this.camera.position.z = 3000;
-                    $(window).resize(_this.updateBoardDimensions);
+                    _this.camera.position.z = 10000;
+                    _this.attachEventHandlers();
                     DeckOfCards.Globals.cards.subscribe(function () {
                         _this.cardModel.addCards(DeckOfCards.Globals.cards());
                     });
@@ -1150,8 +1159,26 @@ var DeckOfCards;
                     });
                     _this.animate();
                 };
+                this.configureControls = function (camera) {
+                    _this.controls = new THREE.TrackballControls(camera, _this.$boardContainer[0]);
+                    _this.controls.rotateSpeed = 1.0;
+                    _this.controls.zoomSpeed = 1.2;
+                    _this.controls.panSpeed = 0.55;
+                    _this.controls.noZoom = false;
+                    _this.controls.noPan = false;
+                    _this.controls.noRoll = true;
+                    _this.controls.noRotate = true;
+                    _this.controls.staticMoving = true;
+                    _this.controls.dynamicDampingFactor = 0.3;
+                    _this.controls.maxDistance = 10000;
+                    _this.controls.minDistance = 3000;
+                    _this.controls.keys = [65, 83, 68];
+                    _this.controls.addEventListener('change', _this.render);
+                    window['controls'] = _this.controls;
+                };
                 this.animate = function () {
                     requestAnimationFrame(_this.animate);
+                    _this.controls.update();
                     _this.render();
                 };
                 this.render = function () {
@@ -1162,6 +1189,49 @@ var DeckOfCards;
                         x: _this.$boardContainer.innerWidth(),
                         y: _this.$boardContainer.innerHeight()
                     });
+                };
+                this.attachEventHandlers = function () {
+                    $(window).resize(_this.updateBoardDimensions);
+                    _this.$boardContainer
+                        .on('mousedown', _this.onMouseDown)
+                        .on('mousemove', _this.onMouseMove)
+                        .on('mouseup', _this.onMouseUp);
+                };
+                this.onMouseDown = function (event) {
+                    event.preventDefault();
+                    var mouse = {
+                        x: (event.clientX / DeckOfCards.Globals.boardDimensions().x) * 2 - 1,
+                        y: -(event.clientY / DeckOfCards.Globals.boardDimensions().y) * 2 + 1
+                    };
+                    _this.raycaster.setFromCamera(mouse, _this.camera);
+                    var allCards = Object.keys(_this.allCards).map(function (key) { return _this.allCards[key]; });
+                    console.log(allCards);
+                    var intersects = _this.raycaster.intersectObjects(allCards, true);
+                    if (intersects.length > 0) {
+                        _this.selectedObject = intersects[intersects.length - 1].object.parent;
+                    }
+                    // intersects.forEach(i => {
+                    //     this.scene.remove(i.object.parent);
+                    // });
+                    _this.render();
+                };
+                this.onMouseMove = function (event) {
+                    if (_this.selectedObject) {
+                        event.preventDefault();
+                        var mouse = {
+                            x: (event.clientX / DeckOfCards.Globals.boardDimensions().x) * 2 - 1,
+                            y: -(event.clientY / DeckOfCards.Globals.boardDimensions().y) * 2 + 1
+                        };
+                        _this.raycaster.setFromCamera(mouse, _this.camera);
+                        var intersects = _this.raycaster.intersectObject(_this.plane);
+                        console.log('intersects: ' + intersects.length);
+                        if (intersects.length > 0) {
+                            _this.selectedObject.position.copy(intersects[0].point);
+                        }
+                    }
+                };
+                this.onMouseUp = function (event) {
+                    _this.selectedObject = null;
                 };
                 this.boardContainerSelector = boardContainerSelector;
             }
