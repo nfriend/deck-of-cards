@@ -13,6 +13,7 @@ module DeckOfCards.Model {
         controls: THREE.TrackballControls;
         selectedObject: THREE.Object3D = null;
         plane: THREE.Object3D;
+        offset: THREE.Vector3;
 
         $boardContainer: JQuery;
 
@@ -25,6 +26,7 @@ module DeckOfCards.Model {
             this.raycaster = new THREE.Raycaster();
             this.$boardContainer = $('#board-container');
             this.allCards = {};
+            this.offset = new THREE.Vector3();
 
             this.updateBoardDimensions();
             var boardDimensions = Globals.boardDimensions();
@@ -39,14 +41,20 @@ module DeckOfCards.Model {
 
             this.configureControls(this.camera);
 
+            this.plane = new THREE.Mesh(
+                new THREE.PlaneBufferGeometry(10000, 10000, 8, 8),
+                new THREE.MeshBasicMaterial({ visible: false })
+            );
+            this.scene.add(this.plane);
+
             loadTexture('images/wood512.jpg').then((wood: THREE.Texture) => {
                 wood.wrapT = wood.wrapS = THREE.RepeatWrapping;
                 wood.repeat.set(5, 5);
-                this.plane = new THREE.Mesh(
+                let boardPlane = new THREE.Mesh(
                     new THREE.PlaneBufferGeometry(10000, 10000, 8, 8),
                     new THREE.MeshBasicMaterial({ color: 0xffffff, map: wood })
                 );
-                this.scene.add(this.plane);
+                this.scene.add(boardPlane);
             });
 
             var light = new THREE.DirectionalLight(0xffffff);
@@ -120,6 +128,12 @@ module DeckOfCards.Model {
         }
 
         private onMouseDown = (event: JQueryMouseEventObject) => {
+            
+            // ignore all clicks except for left clicks
+            if (event.button !== 0) {
+                return;
+            }
+
             event.preventDefault();
             var mouse = {
                 x: (event.clientX / Globals.boardDimensions().x) * 2 - 1,
@@ -127,11 +141,16 @@ module DeckOfCards.Model {
             }
             this.raycaster.setFromCamera(mouse, this.camera);
             let allCards = Object.keys(this.allCards).map(key => this.allCards[key]);
-            console.log(allCards);
             var intersects = this.raycaster.intersectObjects(allCards, true);
 
             if (intersects.length > 0) {
+                this.controls.enabled = false;
                 this.selectedObject = intersects[intersects.length - 1].object.parent;
+                let planeIntersect = this.raycaster.intersectObject(this.plane);
+                if (planeIntersect.length > 0) {
+                    this.offset.copy(planeIntersect[0].point).sub(this.plane.position);
+                }
+                this.$boardContainer.css('cursor', 'move');
             }
             // intersects.forEach(i => {
             //     this.scene.remove(i.object.parent);
@@ -141,23 +160,37 @@ module DeckOfCards.Model {
         }
 
         private onMouseMove = (event: JQueryMouseEventObject) => {
+
+            var mouse = {
+                x: (event.clientX / Globals.boardDimensions().x) * 2 - 1,
+                y: - (event.clientY / Globals.boardDimensions().y) * 2 + 1
+            }
+
             if (this.selectedObject) {
                 event.preventDefault();
-                var mouse = {
-                    x: (event.clientX / Globals.boardDimensions().x) * 2 - 1,
-                    y: - (event.clientY / Globals.boardDimensions().y) * 2 + 1
-                }
                 this.raycaster.setFromCamera(mouse, this.camera);
-                var intersects = this.raycaster.intersectObject(this.plane);
-                console.log('intersects: ' + intersects.length)
+                let intersects = this.raycaster.intersectObject(this.plane);
                 if (intersects.length > 0) {
-                    this.selectedObject.position.copy(intersects[0].point);
+                    this.selectedObject.position.copy(intersects[0].point.sub(this.offset));
                 }
+            }
+
+            this.raycaster.setFromCamera(mouse, this.camera);
+            let allCards = Object.keys(this.allCards).map(key => this.allCards[key]);
+            let intersects = this.raycaster.intersectObjects(allCards, true);
+            if (intersects.length > 0) {
+                this.plane.position.copy(intersects[0].object.parent.position);
+                this.plane.lookAt(this.camera.position);
+                this.$boardContainer.css('cursor', 'pointer');
+            } else {
+                this.$boardContainer.css('cursor', 'auto');
             }
         }
 
         private onMouseUp = (event: JQueryMouseEventObject) => {
             this.selectedObject = null;
+            this.controls.enabled = true;
+            this.$boardContainer.css('cursor', 'auto');
         }
     }
 }

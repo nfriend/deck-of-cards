@@ -1136,6 +1136,7 @@ var DeckOfCards;
                     _this.raycaster = new THREE.Raycaster();
                     _this.$boardContainer = $('#board-container');
                     _this.allCards = {};
+                    _this.offset = new THREE.Vector3();
                     _this.updateBoardDimensions();
                     var boardDimensions = DeckOfCards.Globals.boardDimensions();
                     _this.cardModel = new Model.CardModel(_this.scene, _this.allCards);
@@ -1144,11 +1145,13 @@ var DeckOfCards;
                     _this.$boardContainer.append(_this.renderer.domElement);
                     _this.camera = new THREE.PerspectiveCamera(20, boardDimensions.x / boardDimensions.y, 1, 10000);
                     _this.configureControls(_this.camera);
+                    _this.plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(10000, 10000, 8, 8), new THREE.MeshBasicMaterial({ visible: false }));
+                    _this.scene.add(_this.plane);
                     DeckOfCards.loadTexture('images/wood512.jpg').then(function (wood) {
                         wood.wrapT = wood.wrapS = THREE.RepeatWrapping;
                         wood.repeat.set(5, 5);
-                        _this.plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(10000, 10000, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, map: wood }));
-                        _this.scene.add(_this.plane);
+                        var boardPlane = new THREE.Mesh(new THREE.PlaneBufferGeometry(10000, 10000, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, map: wood }));
+                        _this.scene.add(boardPlane);
                     });
                     var light = new THREE.DirectionalLight(0xffffff);
                     light.position.set(0, 1, 1).normalize();
@@ -1202,6 +1205,10 @@ var DeckOfCards;
                         .on('mouseup', _this.onMouseUp);
                 };
                 this.onMouseDown = function (event) {
+                    // ignore all clicks except for left clicks
+                    if (event.button !== 0) {
+                        return;
+                    }
                     event.preventDefault();
                     var mouse = {
                         x: (event.clientX / DeckOfCards.Globals.boardDimensions().x) * 2 - 1,
@@ -1209,10 +1216,15 @@ var DeckOfCards;
                     };
                     _this.raycaster.setFromCamera(mouse, _this.camera);
                     var allCards = Object.keys(_this.allCards).map(function (key) { return _this.allCards[key]; });
-                    console.log(allCards);
                     var intersects = _this.raycaster.intersectObjects(allCards, true);
                     if (intersects.length > 0) {
+                        _this.controls.enabled = false;
                         _this.selectedObject = intersects[intersects.length - 1].object.parent;
+                        var planeIntersect = _this.raycaster.intersectObject(_this.plane);
+                        if (planeIntersect.length > 0) {
+                            _this.offset.copy(planeIntersect[0].point).sub(_this.plane.position);
+                        }
+                        _this.$boardContainer.css('cursor', 'move');
                     }
                     // intersects.forEach(i => {
                     //     this.scene.remove(i.object.parent);
@@ -1220,22 +1232,34 @@ var DeckOfCards;
                     _this.render();
                 };
                 this.onMouseMove = function (event) {
+                    var mouse = {
+                        x: (event.clientX / DeckOfCards.Globals.boardDimensions().x) * 2 - 1,
+                        y: -(event.clientY / DeckOfCards.Globals.boardDimensions().y) * 2 + 1
+                    };
                     if (_this.selectedObject) {
                         event.preventDefault();
-                        var mouse = {
-                            x: (event.clientX / DeckOfCards.Globals.boardDimensions().x) * 2 - 1,
-                            y: -(event.clientY / DeckOfCards.Globals.boardDimensions().y) * 2 + 1
-                        };
                         _this.raycaster.setFromCamera(mouse, _this.camera);
-                        var intersects = _this.raycaster.intersectObject(_this.plane);
-                        console.log('intersects: ' + intersects.length);
-                        if (intersects.length > 0) {
-                            _this.selectedObject.position.copy(intersects[0].point);
+                        var intersects_1 = _this.raycaster.intersectObject(_this.plane);
+                        if (intersects_1.length > 0) {
+                            _this.selectedObject.position.copy(intersects_1[0].point.sub(_this.offset));
                         }
+                    }
+                    _this.raycaster.setFromCamera(mouse, _this.camera);
+                    var allCards = Object.keys(_this.allCards).map(function (key) { return _this.allCards[key]; });
+                    var intersects = _this.raycaster.intersectObjects(allCards, true);
+                    if (intersects.length > 0) {
+                        _this.plane.position.copy(intersects[0].object.parent.position);
+                        _this.plane.lookAt(_this.camera.position);
+                        _this.$boardContainer.css('cursor', 'pointer');
+                    }
+                    else {
+                        _this.$boardContainer.css('cursor', 'auto');
                     }
                 };
                 this.onMouseUp = function (event) {
                     _this.selectedObject = null;
+                    _this.controls.enabled = true;
+                    _this.$boardContainer.css('cursor', 'auto');
                 };
                 this.boardContainerSelector = boardContainerSelector;
             }
