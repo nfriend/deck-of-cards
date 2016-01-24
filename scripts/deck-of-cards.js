@@ -1220,6 +1220,7 @@ var DeckOfCards;
                     if (intersects.length > 0) {
                         _this.controls.enabled = false;
                         _this.selectedObject = intersects[intersects.length - 1].object.parent;
+                        //this.selectedObject.position.add(new THREE.Vector3(0, 0, 1000));
                         var planeIntersect = _this.raycaster.intersectObject(_this.plane);
                         if (planeIntersect.length > 0) {
                             _this.offset.copy(planeIntersect[0].point).sub(_this.plane.position);
@@ -1241,7 +1242,9 @@ var DeckOfCards;
                         _this.raycaster.setFromCamera(mouse, _this.camera);
                         var intersects_1 = _this.raycaster.intersectObject(_this.plane);
                         if (intersects_1.length > 0) {
-                            _this.selectedObject.position.copy(intersects_1[0].point.sub(_this.offset));
+                            var newPosition = intersects_1[0].point.sub(_this.offset);
+                            newPosition.z = _this.selectedObject.position.z;
+                            _this.selectedObject.position.copy(newPosition);
                         }
                     }
                     _this.raycaster.setFromCamera(mouse, _this.camera);
@@ -1257,6 +1260,7 @@ var DeckOfCards;
                     }
                 };
                 this.onMouseUp = function (event) {
+                    //this.selectedObject.position.add(new THREE.Vector3(0, 0, -1000));
                     _this.selectedObject = null;
                     _this.controls.enabled = true;
                     _this.$boardContainer.css('cursor', 'auto');
