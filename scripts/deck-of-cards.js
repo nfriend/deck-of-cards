@@ -1144,8 +1144,12 @@ var DeckOfCards;
                     _this.$boardContainer.append(_this.renderer.domElement);
                     _this.camera = new THREE.PerspectiveCamera(20, boardDimensions.x / boardDimensions.y, 1, 10000);
                     _this.configureControls(_this.camera);
-                    _this.plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(10000, 10000, 8, 8), new THREE.MeshBasicMaterial({ visible: false }));
-                    _this.scene.add(_this.plane);
+                    DeckOfCards.loadTexture('images/wood512.jpg').then(function (wood) {
+                        wood.wrapT = wood.wrapS = THREE.RepeatWrapping;
+                        wood.repeat.set(5, 5);
+                        _this.plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(10000, 10000, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, map: wood }));
+                        _this.scene.add(_this.plane);
+                    });
                     var light = new THREE.DirectionalLight(0xffffff);
                     light.position.set(0, 1, 1).normalize();
                     _this.scene.add(light);

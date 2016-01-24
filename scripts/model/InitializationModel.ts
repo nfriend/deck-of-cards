@@ -39,11 +39,15 @@ module DeckOfCards.Model {
 
             this.configureControls(this.camera);
 
-            this.plane = new THREE.Mesh(
-                new THREE.PlaneBufferGeometry(10000, 10000, 8, 8),
-                new THREE.MeshBasicMaterial({ visible: false })
-            );
-            this.scene.add(this.plane);
+            loadTexture('images/wood512.jpg').then((wood: THREE.Texture) => {
+                wood.wrapT = wood.wrapS = THREE.RepeatWrapping;
+                wood.repeat.set(5, 5);
+                this.plane = new THREE.Mesh(
+                    new THREE.PlaneBufferGeometry(10000, 10000, 8, 8),
+                    new THREE.MeshBasicMaterial({ color: 0xffffff, map: wood })
+                );
+                this.scene.add(this.plane);
+            });
 
             var light = new THREE.DirectionalLight(0xffffff);
             light.position.set(0, 1, 1).normalize();
