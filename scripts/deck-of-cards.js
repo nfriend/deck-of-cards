@@ -752,12 +752,22 @@ var DeckOfCards;
                     DeckOfCards.log('updating all cards', message);
                     DeckOfCards.Globals.cards(message.data.cards);
                 };
+                this.onUpdateCardMessage = function (message) {
+                    DeckOfCards.log('updating card', message);
+                    var cardToUpdate = DeckOfCards.Globals.cards().filter(function (c) { return c.id === message.data.card.id; })[0];
+                    if (cardToUpdate) {
+                        DeckOfCards.Globals.cards.splice(DeckOfCards.Globals.cards().indexOf(cardToUpdate), 1, message.data.card);
+                    }
+                };
                 DeckOfCards.WebsocketService.Instance.on('receive', function (wsMessage) {
                     if (wsMessage.messageType === 'updatePlayers') {
                         _this.onUpdatePlayersMessage(wsMessage);
                     }
                     else if (wsMessage.messageType === 'updateCards') {
                         _this.onUpdateCardsMessage(wsMessage);
+                    }
+                    else if (wsMessage.messageType === 'updateCard') {
+                        _this.onUpdateCardMessage(wsMessage);
                     }
                 });
                 var joinMessage = {
@@ -1072,11 +1082,15 @@ var DeckOfCards;
             function CardModel(scene, allCards) {
                 var _this = this;
                 this.addCards = function (cards) {
+                    console.log('adding cards');
                     var deferred = $.Deferred();
                     var cardsToAdd = [];
                     DeckOfCards.Globals.cards().forEach(function (card) {
                         if (!_this.allCards[card.id]) {
                             cardsToAdd.push(card);
+                        }
+                        else {
+                            _this.allCards[card.id].card = card;
                         }
                     });
                     var backTextureUrl = 'images/cards/vector/back.svg';
@@ -1093,11 +1107,8 @@ var DeckOfCards;
                 this.updateCardPositions = function () {
                     Object.keys(_this.allCards).forEach(function (key) {
                         var object3dCard = _this.allCards[key];
-                        var factor = {
-                            x: 300,
-                            y: 200
-                        };
-                        object3dCard.position.set(object3dCard.card.position.x * 0.01 * factor.x, object3dCard.card.position.y * 0.01 * factor.y, object3dCard.card.zIndex);
+                        console.log(object3dCard.card.position);
+                        object3dCard.position.set(object3dCard.card.position.x, object3dCard.card.position.y, object3dCard.card.zIndex);
                     });
                 };
                 this.onTexturesLoaded = function (cardsToAdd, frontTextures, backTexture) {
@@ -1220,16 +1231,12 @@ var DeckOfCards;
                     if (intersects.length > 0) {
                         _this.controls.enabled = false;
                         _this.selectedObject = intersects[intersects.length - 1].object.parent;
-                        //this.selectedObject.position.add(new THREE.Vector3(0, 0, 1000));
                         var planeIntersect = _this.raycaster.intersectObject(_this.plane);
                         if (planeIntersect.length > 0) {
                             _this.offset.copy(planeIntersect[0].point).sub(_this.plane.position);
                         }
                         _this.$boardContainer.css('cursor', 'move');
                     }
-                    // intersects.forEach(i => {
-                    //     this.scene.remove(i.object.parent);
-                    // });
                     _this.render();
                 };
                 this.onMouseMove = function (event) {
@@ -1260,8 +1267,18 @@ var DeckOfCards;
                     }
                 };
                 this.onMouseUp = function (event) {
-                    //this.selectedObject.position.add(new THREE.Vector3(0, 0, -1000));
-                    _this.selectedObject = null;
+                    if (_this.selectedObject) {
+                        _this.selectedObject.card.position = _this.selectedObject.position;
+                        var updateCardMessage = {
+                            messageType: 'updateCard',
+                            data: {
+                                card: _this.selectedObject.card
+                            }
+                        };
+                        console.log('sending message', updateCardMessage);
+                        DeckOfCards.WebsocketService.Instance.send(updateCardMessage);
+                        _this.selectedObject = null;
+                    }
                     _this.controls.enabled = true;
                     _this.$boardContainer.css('cursor', 'auto');
                 };

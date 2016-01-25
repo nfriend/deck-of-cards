@@ -50,3 +50,8 @@ interface UpdateCardsMessage extends Message {
         cards: Card[];
     };
 }
+interface UpdateCardMessage extends Message {
+    data: {
+        card: Card;
+    };
+}

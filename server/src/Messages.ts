@@ -61,3 +61,10 @@ export interface UpdateCardsMessage extends Message {
     }
 }
 
+export interface UpdateCardMessage extends Message {
+    data: {
+        card: Card
+    }
+}
+
+

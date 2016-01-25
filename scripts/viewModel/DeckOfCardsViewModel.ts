@@ -9,6 +9,8 @@ module DeckOfCards.ViewModel {
                     this.onUpdatePlayersMessage(wsMessage);
                 } else if (wsMessage.messageType === 'updateCards') {
                     this.onUpdateCardsMessage(wsMessage);
+                } else if (wsMessage.messageType === 'updateCard') {
+                    this.onUpdateCardMessage(wsMessage);
                 }
                     
             });
@@ -51,6 +53,14 @@ module DeckOfCards.ViewModel {
         onUpdateCardsMessage = (message: UpdateCardsMessage) => {
             log('updating all cards', message);
             Globals.cards(message.data.cards);
+        }
+        
+        onUpdateCardMessage = (message: UpdateCardMessage) => {
+            log('updating card', message)
+            let cardToUpdate = Globals.cards().filter(c => c.id === message.data.card.id)[0];
+            if (cardToUpdate) {
+                Globals.cards.splice(Globals.cards().indexOf(cardToUpdate), 1, message.data.card);
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ import updateMyPlayerInfo = require('./actions/updateMyPlayerInfo');
 import requestChatHistory = require('./actions/requestChatHistory');
 import requestPlayerUpdate = require('./actions/requestPlayerUpdate');
 import addCards = require('./actions/addCards');
+import updateCard = require('./actions/updateCard');
 
 export = MessageProcessor;
 
@@ -41,6 +42,8 @@ class MessageProcessor {
             requestPlayerUpdate(this.gameIdToClients, connection, message);
         } else if (message.messageType === 'addCards') {
             addCards(this.gameIdToClients, connection, message);
+        } else if (message.messageType === 'updateCard') {
+            updateCard(this.gameIdToClients, connection, message);
         } else {
             log('Unknown messageType "' + message.messageType + '"');
         }

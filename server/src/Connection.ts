@@ -20,7 +20,8 @@ class Connection {
         |Message.ChatHistoryMessage
         |Message.UpdatePlayersMessage
         |Message.UpdateMyPlayerInfoMessage
-        |Message.AddCardsMessage) {
+        |Message.AddCardsMessage
+        |Message.UpdateCardMessage) {
             
 		this.websocketConnection.sendUTF(JSON.stringify(message));
 	}

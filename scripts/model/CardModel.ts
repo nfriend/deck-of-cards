@@ -13,12 +13,15 @@ module DeckOfCards.Model {
         }
 
         addCards = (cards: Card[]): JQueryDeferred<void> => {
+            console.log('adding cards');
             let deferred = $.Deferred<void>();
 
             let cardsToAdd: Card[] = [];
             Globals.cards().forEach(card => {
                 if (!this.allCards[card.id]) {
                     cardsToAdd.push(card);
+                } else {
+                    this.allCards[card.id].card = card;
                 }
             });
 
@@ -42,13 +45,10 @@ module DeckOfCards.Model {
         updateCardPositions = () => {
             Object.keys(this.allCards).forEach(key => {
                 let object3dCard = this.allCards[key];
-                let factor = {
-                    x: 300,
-                    y: 200
-                }
+                console.log(object3dCard.card.position);
                 object3dCard.position.set(
-                    object3dCard.card.position.x * 0.01 * factor.x,
-                    object3dCard.card.position.y * 0.01 * factor.y,
+                    object3dCard.card.position.x,
+                    object3dCard.card.position.y,
                     object3dCard.card.zIndex
                 );
             });

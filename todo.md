@@ -13,4 +13,14 @@ TODO
 
 - Change SVGs to PNGs - this will fix the strange resizing in Firefox
 
-- Switch background from a background image to an actual THREE.js object (it should be the plane that's used for hit testing when dragging)
+- If three cards are all on top of each other (in a "held-in-a-hand" position), and you try to drag the topmost card, it jumps to the back card before beginning the drag
+
+- Figure out how events from the server should be handled - right now the handlers are scattered throughout the app
+
+- Better organize the "ViewModel" vs "Model" classes
+
+- Make currently dragged card always appear on top
+
+- change default scroll to be closer so that we don't start all the way zoomed out
+
+- detect non-WebGL browser, show message

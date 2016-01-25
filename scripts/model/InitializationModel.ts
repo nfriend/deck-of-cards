@@ -146,16 +146,12 @@ module DeckOfCards.Model {
             if (intersects.length > 0) {
                 this.controls.enabled = false;
                 this.selectedObject = intersects[intersects.length - 1].object.parent;
-                //this.selectedObject.position.add(new THREE.Vector3(0, 0, 1000));
                 let planeIntersect = this.raycaster.intersectObject(this.plane);
                 if (planeIntersect.length > 0) {
                     this.offset.copy(planeIntersect[0].point).sub(this.plane.position);
                 }
                 this.$boardContainer.css('cursor', 'move');
             }
-            // intersects.forEach(i => {
-            //     this.scene.remove(i.object.parent);
-            // });
 
             this.render();
         }
@@ -191,8 +187,20 @@ module DeckOfCards.Model {
         }
 
         private onMouseUp = (event: JQueryMouseEventObject) => {
-            //this.selectedObject.position.add(new THREE.Vector3(0, 0, -1000));
-            this.selectedObject = null;
+            if (this.selectedObject) {
+                (<Object3DCard>this.selectedObject).card.position = this.selectedObject.position;
+                var updateCardMessage: UpdateCardMessage = {
+                    messageType: 'updateCard',
+                    data: {
+                        card: (<Object3DCard>this.selectedObject).card
+                    }
+                }
+                console.log('sending message', updateCardMessage);
+                WebsocketService.Instance.send(updateCardMessage);
+                
+                this.selectedObject = null;
+            }
+            
             this.controls.enabled = true;
             this.$boardContainer.css('cursor', 'auto');
         }
