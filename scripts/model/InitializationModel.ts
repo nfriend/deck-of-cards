@@ -14,6 +14,7 @@ module DeckOfCards.Model {
         selectedObject: THREE.Object3D = null;
         plane: THREE.Object3D;
         offset: THREE.Vector3;
+        mousedownStart: number;
 
         $boardContainer: JQuery;
 
@@ -37,7 +38,7 @@ module DeckOfCards.Model {
             this.renderer.setSize(boardDimensions.x, boardDimensions.y);
             this.$boardContainer.append(this.renderer.domElement)
 
-            this.camera = new THREE.PerspectiveCamera(20, boardDimensions.x / boardDimensions.y, 1, 10000);
+            this.camera = new THREE.PerspectiveCamera(20, boardDimensions.x / boardDimensions.y, 1, 30000);
 
             this.configureControls(this.camera);
 
@@ -49,9 +50,9 @@ module DeckOfCards.Model {
 
             loadTexture('images/wood512.jpg').then((wood: THREE.Texture) => {
                 wood.wrapT = wood.wrapS = THREE.RepeatWrapping;
-                wood.repeat.set(5, 5);
+                wood.repeat.set(15, 15);
                 let boardPlane = new THREE.Mesh(
-                    new THREE.PlaneBufferGeometry(10000, 10000, 8, 8),
+                    new THREE.PlaneBufferGeometry(30000, 30000, 8, 8),
                     new THREE.MeshBasicMaterial({ color: 0xffffff, map: wood })
                 );
                 this.scene.add(boardPlane);
@@ -85,7 +86,7 @@ module DeckOfCards.Model {
 
             this.controls.rotateSpeed = 1.0;
             this.controls.zoomSpeed = 1.2;
-            this.controls.panSpeed = 0.55;
+            this.controls.panSpeed = 0.45;
 
             this.controls.noZoom = false;
             this.controls.noPan = false;
@@ -95,7 +96,7 @@ module DeckOfCards.Model {
             this.controls.staticMoving = true;
             this.controls.dynamicDampingFactor = 0.3;
 
-            this.controls.maxDistance = 10000;
+            this.controls.maxDistance = 30000;
             this.controls.minDistance = 3000;
 
             this.controls.keys = [65, 83, 68];
@@ -140,6 +141,8 @@ module DeckOfCards.Model {
             }
 
             event.preventDefault();
+            this.mousedownStart = Date.now();
+
             var mouse = {
                 x: (event.clientX / Globals.boardDimensions().x) * 2 - 1,
                 y: - (event.clientY / Globals.boardDimensions().y) * 2 + 1
@@ -176,6 +179,12 @@ module DeckOfCards.Model {
                     let newPosition = intersects[0].point.sub(this.offset);
                     newPosition.z = this.selectedObject.position.z;
                     this.selectedObject.position.copy(newPosition);
+
+                    if (Date.now() - this.mousedownStart > 200) {
+                        (<Object3DCard>this.selectedObject).card.position = this.selectedObject.position;
+                        this.sendUpdateCardMessage((<Object3DCard>this.selectedObject).card);
+                        this.mousedownStart = Date.now();
+                    }
                 }
             }
 
@@ -194,20 +203,22 @@ module DeckOfCards.Model {
         private onMouseUp = (event: JQueryMouseEventObject) => {
             if (this.selectedObject) {
                 (<Object3DCard>this.selectedObject).card.position = this.selectedObject.position;
-                var updateCardMessage: UpdateCardMessage = {
-                    messageType: 'updateCard',
-                    data: {
-                        card: (<Object3DCard>this.selectedObject).card
-                    }
-                }
-                console.log('sending message', updateCardMessage);
-                WebsocketService.Instance.send(updateCardMessage);
-                
+                this.sendUpdateCardMessage((<Object3DCard>this.selectedObject).card);
                 this.selectedObject = null;
             }
-            
+
             this.controls.enabled = true;
             this.$boardContainer.css('cursor', 'auto');
+        }
+
+        private sendUpdateCardMessage = (card: Card) => {
+            var updateCardMessage: UpdateCardMessage = {
+                messageType: 'updateCard',
+                data: {
+                    card: card
+                }
+            }
+            WebsocketService.Instance.send(updateCardMessage);
         }
     }
 }

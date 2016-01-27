@@ -1160,14 +1160,14 @@ var DeckOfCards;
                     _this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, devicePixelRatio: window.devicePixelRatio || 1 });
                     _this.renderer.setSize(boardDimensions.x, boardDimensions.y);
                     _this.$boardContainer.append(_this.renderer.domElement);
-                    _this.camera = new THREE.PerspectiveCamera(20, boardDimensions.x / boardDimensions.y, 1, 10000);
+                    _this.camera = new THREE.PerspectiveCamera(20, boardDimensions.x / boardDimensions.y, 1, 30000);
                     _this.configureControls(_this.camera);
                     _this.plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(10000, 10000, 8, 8), new THREE.MeshBasicMaterial({ visible: false }));
                     _this.scene.add(_this.plane);
                     DeckOfCards.loadTexture('images/wood512.jpg').then(function (wood) {
                         wood.wrapT = wood.wrapS = THREE.RepeatWrapping;
-                        wood.repeat.set(5, 5);
-                        var boardPlane = new THREE.Mesh(new THREE.PlaneBufferGeometry(10000, 10000, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, map: wood }));
+                        wood.repeat.set(15, 15);
+                        var boardPlane = new THREE.Mesh(new THREE.PlaneBufferGeometry(30000, 30000, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, map: wood }));
                         _this.scene.add(boardPlane);
                     });
                     var light = new THREE.DirectionalLight(0xffffff);
@@ -1191,14 +1191,14 @@ var DeckOfCards;
                     _this.controls = new THREE.TrackballControls(camera, _this.$boardContainer[0]);
                     _this.controls.rotateSpeed = 1.0;
                     _this.controls.zoomSpeed = 1.2;
-                    _this.controls.panSpeed = 0.55;
+                    _this.controls.panSpeed = 0.45;
                     _this.controls.noZoom = false;
                     _this.controls.noPan = false;
                     _this.controls.noRoll = true;
                     _this.controls.noRotate = true;
                     _this.controls.staticMoving = true;
                     _this.controls.dynamicDampingFactor = 0.3;
-                    _this.controls.maxDistance = 10000;
+                    _this.controls.maxDistance = 30000;
                     _this.controls.minDistance = 3000;
                     _this.controls.keys = [65, 83, 68];
                     _this.controls.addEventListener('change', _this.render);
@@ -1232,6 +1232,7 @@ var DeckOfCards;
                         return;
                     }
                     event.preventDefault();
+                    _this.mousedownStart = Date.now();
                     var mouse = {
                         x: (event.clientX / DeckOfCards.Globals.boardDimensions().x) * 2 - 1,
                         y: -(event.clientY / DeckOfCards.Globals.boardDimensions().y) * 2 + 1
@@ -1263,6 +1264,11 @@ var DeckOfCards;
                             var newPosition = intersects_1[0].point.sub(_this.offset);
                             newPosition.z = _this.selectedObject.position.z;
                             _this.selectedObject.position.copy(newPosition);
+                            if (Date.now() - _this.mousedownStart > 200) {
+                                _this.selectedObject.card.position = _this.selectedObject.position;
+                                _this.sendUpdateCardMessage(_this.selectedObject.card);
+                                _this.mousedownStart = Date.now();
+                            }
                         }
                     }
                     _this.raycaster.setFromCamera(mouse, _this.camera);
@@ -1280,18 +1286,20 @@ var DeckOfCards;
                 this.onMouseUp = function (event) {
                     if (_this.selectedObject) {
                         _this.selectedObject.card.position = _this.selectedObject.position;
-                        var updateCardMessage = {
-                            messageType: 'updateCard',
-                            data: {
-                                card: _this.selectedObject.card
-                            }
-                        };
-                        console.log('sending message', updateCardMessage);
-                        DeckOfCards.WebsocketService.Instance.send(updateCardMessage);
+                        _this.sendUpdateCardMessage(_this.selectedObject.card);
                         _this.selectedObject = null;
                     }
                     _this.controls.enabled = true;
                     _this.$boardContainer.css('cursor', 'auto');
+                };
+                this.sendUpdateCardMessage = function (card) {
+                    var updateCardMessage = {
+                        messageType: 'updateCard',
+                        data: {
+                            card: card
+                        }
+                    };
+                    DeckOfCards.WebsocketService.Instance.send(updateCardMessage);
                 };
                 this.boardContainerSelector = boardContainerSelector;
             }

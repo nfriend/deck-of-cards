@@ -7,6 +7,10 @@ body, html {
     font-family: 'Montserrat', sans-serif;
 }
 
+body {
+  background-image: url('../images/wood.jpg');
+}
+
 canvas {
 	width: 100%;
 	height: 100%;
@@ -20,7 +24,6 @@ canvas {
 #board-container {
 	float: left;
 	left: 0;
-	width: 80%;
 }
 
 .modal-header {
@@ -41,4 +44,34 @@ canvas {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+@media (max-width: @screen-xs-max) { 
+	#board-container {
+		width: 100%;
+	}
+}
+
+@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+	#board-container {
+		width: 75%;
+	}
+ }
+ 
+@media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
+	#board-container {
+		width: 77%;
+	}
+ }
+ 
+@media (min-width: @screen-lg-min) and (max-width: @screen-lg-max) { 
+	#board-container {
+		width: 82%;
+	}
+}
+
+@media (min-width: @screen-xl-min) { 
+	#board-container {
+		width: 89%;
+	}
 }
