@@ -9,7 +9,7 @@ module DeckOfCards.Model {
         boardContainerSelector: string;
         cardModel: CardModel;
         renderer: THREE.Renderer;
-        camera: THREE.Camera;
+        camera: THREE.PerspectiveCamera;
         controls: THREE.TrackballControls;
         selectedObject: THREE.Object3D = null;
         plane: THREE.Object3D;
@@ -70,7 +70,11 @@ module DeckOfCards.Model {
             });
 
             Globals.boardDimensions.subscribe(() => {
+                let boardDimensions = Globals.boardDimensions();
                 this.cardModel.updateCardPositions();
+                this.renderer.setSize(boardDimensions.x, boardDimensions.y);
+                this.camera.aspect = boardDimensions.x / boardDimensions.y;
+                this.camera.updateProjectionMatrix();
             });
 
             this.animate();

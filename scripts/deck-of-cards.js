@@ -1179,7 +1179,11 @@ var DeckOfCards;
                         _this.cardModel.addCards(DeckOfCards.Globals.cards());
                     });
                     DeckOfCards.Globals.boardDimensions.subscribe(function () {
+                        var boardDimensions = DeckOfCards.Globals.boardDimensions();
                         _this.cardModel.updateCardPositions();
+                        _this.renderer.setSize(boardDimensions.x, boardDimensions.y);
+                        _this.camera.aspect = boardDimensions.x / boardDimensions.y;
+                        _this.camera.updateProjectionMatrix();
                     });
                     _this.animate();
                 };
