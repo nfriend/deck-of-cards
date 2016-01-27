@@ -105,6 +105,7 @@ module DeckOfCards.Model {
             requestAnimationFrame(this.animate);
             this.controls.update();
             this.render();
+            TWEEN.update();
         }
 
         private render = () => {

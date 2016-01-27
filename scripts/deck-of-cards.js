@@ -1087,7 +1087,6 @@ var DeckOfCards;
             function CardModel(scene, allCards) {
                 var _this = this;
                 this.addCards = function (cards) {
-                    console.log('adding cards');
                     var deferred = $.Deferred();
                     var cardsToAdd = [];
                     DeckOfCards.Globals.cards().forEach(function (card) {
@@ -1112,8 +1111,10 @@ var DeckOfCards;
                 this.updateCardPositions = function () {
                     Object.keys(_this.allCards).forEach(function (key) {
                         var object3dCard = _this.allCards[key];
-                        console.log(object3dCard.card.position);
-                        object3dCard.position.set(object3dCard.card.position.x, object3dCard.card.position.y, object3dCard.card.zIndex);
+                        object3dCard.position.setZ(object3dCard.card.zIndex);
+                        if (object3dCard.card.position.x !== object3dCard.position.x || object3dCard.card.position.y !== object3dCard.position.y) {
+                            new TWEEN.Tween(object3dCard.position).to(object3dCard.card.position, 600).easing(TWEEN.Easing.Cubic.Out).start();
+                        }
                     });
                 };
                 this.onTexturesLoaded = function (cardsToAdd, frontTextures, backTexture) {
@@ -1203,6 +1204,7 @@ var DeckOfCards;
                     requestAnimationFrame(_this.animate);
                     _this.controls.update();
                     _this.render();
+                    TWEEN.update();
                 };
                 this.render = function () {
                     _this.renderer.render(_this.scene, _this.camera);
