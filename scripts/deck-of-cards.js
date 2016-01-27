@@ -785,6 +785,11 @@ var DeckOfCards;
                     data: {}
                 };
                 DeckOfCards.WebsocketService.Instance.send(requestPlayerUpdateMessage);
+                var requestCardUpdate = {
+                    messageType: 'requestCardUpdate',
+                    data: {}
+                };
+                DeckOfCards.WebsocketService.Instance.send(requestCardUpdate);
                 DeckOfCards.WebsocketService.Instance.connect();
             }
             return DeckOfCardsViewModel;

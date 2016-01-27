@@ -26,11 +26,18 @@ module DeckOfCards.ViewModel {
             };
             WebsocketService.Instance.send(joinMessage);
 
-            let requestPlayerUpdateMessage: RequestPlayerUpdate = {
+            let requestPlayerUpdateMessage: RequestPlayerUpdateMessage = {
                 messageType: 'requestPlayerUpdate',
                 data: {}
             }
             WebsocketService.Instance.send(requestPlayerUpdateMessage);
+            
+            let requestCardUpdate: RequestCardUpdateMessage = {
+                messageType: 'requestCardUpdate',
+                data: {}
+            }
+            WebsocketService.Instance.send(requestCardUpdate);
+            
 
             WebsocketService.Instance.connect();
         }

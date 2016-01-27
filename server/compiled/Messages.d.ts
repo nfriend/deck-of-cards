@@ -14,9 +14,9 @@ export interface ChatHistoryMessage extends Message {
         messages: ChatMessage[];
     };
 }
-export interface RequestChatHistory extends Message {
+export interface RequestChatHistoryMessage extends Message {
 }
-export interface RequestPlayerUpdate extends Message {
+export interface RequestPlayerUpdateMessage extends Message {
 }
 export interface JoinMessage extends Message {
     data: {
@@ -55,4 +55,6 @@ export interface UpdateCardMessage extends Message {
     data: {
         card: Card;
     };
+}
+export interface RequestCardUpdateMessage extends Message {
 }

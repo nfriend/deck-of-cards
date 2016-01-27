@@ -15,7 +15,7 @@ module DeckOfCards.ViewModel {
             this.wss.on('receive', this.onWebsocketReceive);
             
             // request that any chat history for this game be sent to us
-            let chatRequest: RequestChatHistory = {
+            let chatRequest: RequestChatHistoryMessage = {
                 messageType: 'requestChatHistory',  
                 data: {}
             };

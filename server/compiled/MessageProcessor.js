@@ -7,6 +7,7 @@ var requestChatHistory = require('./actions/requestChatHistory');
 var requestPlayerUpdate = require('./actions/requestPlayerUpdate');
 var addCards = require('./actions/addCards');
 var updateCard = require('./actions/updateCard');
+var requestCards = require('./actions/requestCards');
 var MessageProcessor = (function () {
     function MessageProcessor() {
         if (MessageProcessor.Instance) {
@@ -36,6 +37,9 @@ var MessageProcessor = (function () {
         }
         else if (message.messageType === 'updateCard') {
             updateCard(this.gameIdToClients, connection, message);
+        }
+        else if (message.messageType === 'requestCardUpdate') {
+            requestCards(this.gameIdToClients, connection, message);
         }
         else {
             log('Unknown messageType "' + message.messageType + '"');

@@ -4,7 +4,7 @@ import GameClientMapping = require('../GameIdToGame');
 
 export = requestPlayerUpdate;
 
-function requestPlayerUpdate(gameIdToGames: GameClientMapping, connection: Connection, message: Messages.RequestPlayerUpdate) {
+function requestPlayerUpdate(gameIdToGames: GameClientMapping, connection: Connection, message: Messages.RequestPlayerUpdateMessage) {
 
     let gameId = connection.gameId;
      

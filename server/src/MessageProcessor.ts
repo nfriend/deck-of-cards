@@ -11,6 +11,7 @@ import requestChatHistory = require('./actions/requestChatHistory');
 import requestPlayerUpdate = require('./actions/requestPlayerUpdate');
 import addCards = require('./actions/addCards');
 import updateCard = require('./actions/updateCard');
+import requestCards = require('./actions/requestCards');
 
 export = MessageProcessor;
 
@@ -44,6 +45,8 @@ class MessageProcessor {
             addCards(this.gameIdToClients, connection, message);
         } else if (message.messageType === 'updateCard') {
             updateCard(this.gameIdToClients, connection, message);
+        } else if (message.messageType === 'requestCardUpdate') {
+            requestCards(this.gameIdToClients, connection, message);
         } else {
             log('Unknown messageType "' + message.messageType + '"');
         }

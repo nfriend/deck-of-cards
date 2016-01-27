@@ -4,7 +4,7 @@ import GameClientMapping = require('../GameIdToGame');
 
 export = requestChatHistory;
 
-function requestChatHistory(gameIdToGames: GameClientMapping, connection: Connection, message: Messages.RequestChatHistory) {
+function requestChatHistory(gameIdToGames: GameClientMapping, connection: Connection, message: Messages.RequestChatHistoryMessage) {
 
     let game = gameIdToGames[connection.gameId]; 
 	if (game.chatHistory.length > 0) {
