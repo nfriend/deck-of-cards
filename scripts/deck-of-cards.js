@@ -746,7 +746,6 @@ var DeckOfCards;
                             orientation: null
                         };
                     }));
-                    DeckOfCards.log(ko.unwrap(DeckOfCards.Globals.players));
                 };
                 this.onUpdateCardsMessage = function (message) {
                     DeckOfCards.log('updating all cards', message);

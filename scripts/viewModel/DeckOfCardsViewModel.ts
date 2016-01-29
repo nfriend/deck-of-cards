@@ -54,7 +54,6 @@ module DeckOfCards.ViewModel {
                     orientation: null
                 }
             }));
-            log(ko.unwrap(Globals.players));
         }
         
         onUpdateCardsMessage = (message: UpdateCardsMessage) => {

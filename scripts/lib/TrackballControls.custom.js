@@ -266,8 +266,7 @@ THREE.TrackballControls = function (object, domElement) {
                     || (_this.object.position.y + pan.y > _this.maxPanY && pan.y > 0)) {
                     pan.y = 0;
                 }
-
-                console.log(_this.object.position);
+                
                 _this.object.position.add(pan);
                 _this.target.add(pan);
 

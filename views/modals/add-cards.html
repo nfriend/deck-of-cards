@@ -1,6 +1,6 @@
 <div data-bind="modal: {
     visible: isVisible,
-    dialogCss: 'modal-lg',
+    dialogCss: 'modal-lg add-cards-modal',
     header: { name: 'add-cards-modal-header-template', data: $data },
     body: { name: 'add-cards-modal-body-template', data: $data },
     footer: { name: 'add-cards-modal-footer-template', data: $data },
@@ -13,7 +13,7 @@
 
 <script type="text/html" id="add-cards-modal-body-template">
     <p>Click on a card to add one more of that card to the board. Right-click to remove. When you are finished with your selections,
-        click the "Add Cards" button.</p>
+        click the "Add Cards" button at the bottom of this dialog.</p>
     <div style="text-align: center;">
         <button class="btn btn-default" data-bind="click: addFullDeck">Add full deck</button>
         <button class="btn btn-default" data-bind="click: clearAll">Clear all</button>
