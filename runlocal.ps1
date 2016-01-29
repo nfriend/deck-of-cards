@@ -5,4 +5,6 @@ start powershell -argumentlist "-noexit","-command","node ./server/compiled/deck
 code .
 code ./server/
 start http://localhost:8080
+cd G:\deck-of-cards
+start "C:\Program Files\Git\git-bash.exe"
 exit
