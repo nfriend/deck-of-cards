@@ -12,6 +12,5 @@ code ./server/
 echo 'Opening up local site in Chrome...'
 start http://localhost:8080
 echo 'Opening up a git bash window at the root of the repo...'
-cd G:\deck-of-cards
 start "C:\Program Files\Git\git-bash.exe"
 echo 'Done.  Happy developing.'

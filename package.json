@@ -1,0 +1,27 @@
+{
+  "name": "deck-of-cards",
+  "version": "1.0.0",
+  "description": "A deck of cards.",
+  "main": "index.html",
+  "dependencies": {},
+  "devDependencies": {
+    "autoprefixer": "^6.3.1",
+    "grunt": "^0.4.5",
+    "grunt-contrib-less": "^1.1.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-postcss": "^0.7.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nfriend/deck-of-cards.git"
+  },
+  "author": "Nathan Friend",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nfriend/deck-of-cards/issues"
+  },
+  "homepage": "https://github.com/nfriend/deck-of-cards#readme"
+}
