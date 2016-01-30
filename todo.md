@@ -13,8 +13,6 @@ TODO
 
 - Change SVGs to PNGs - this will fix the strange resizing in Firefox
 
-- If three cards are all on top of each other (in a "held-in-a-hand" position), and you try to drag the topmost card, it jumps to the back card before beginning the drag
-
 - Figure out how events from the server should be handled - right now the handlers are scattered throughout the app
 
 - Better organize the "ViewModel" vs "Model" classes

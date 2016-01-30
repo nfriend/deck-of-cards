@@ -43,7 +43,7 @@ module DeckOfCards.Model {
             this.configureControls(this.camera);
 
             this.plane = new THREE.Mesh(
-                new THREE.PlaneBufferGeometry(10000, 10000, 8, 8),
+                new THREE.PlaneBufferGeometry(30000, 30000, 8, 8),
                 new THREE.MeshBasicMaterial({ visible: false })
             );
             this.scene.add(this.plane);
@@ -163,9 +163,10 @@ module DeckOfCards.Model {
 
             this.render();
         }
-
+        
+        private counter = 0;
         private onMouseMove = (event: JQueryMouseEventObject) => {
-
+            
             var mouse = {
                 x: (event.clientX / Globals.boardDimensions().x) * 2 - 1,
                 y: - (event.clientY / Globals.boardDimensions().y) * 2 + 1
@@ -176,6 +177,7 @@ module DeckOfCards.Model {
                 this.raycaster.setFromCamera(mouse, this.camera);
                 let intersects = this.raycaster.intersectObject(this.plane);
                 if (intersects.length > 0) {
+                    
                     let newPosition = intersects[0].point.sub(this.offset);
                     newPosition.z = this.selectedObject.position.z;
                     this.selectedObject.position.copy(newPosition);
@@ -192,7 +194,7 @@ module DeckOfCards.Model {
             let allCards = Object.keys(this.allCards).map(key => this.allCards[key]);
             let intersects = this.raycaster.intersectObjects(allCards, true);
             if (intersects.length > 0) {
-                this.plane.position.copy(intersects[0].object.parent.position);
+                this.plane.position.copy(intersects[intersects.length - 1].object.parent.position);
                 this.plane.lookAt(this.camera.position);
                 this.$boardContainer.css('cursor', 'pointer');
             } else {

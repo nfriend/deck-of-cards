@@ -1161,7 +1161,7 @@ var DeckOfCards;
                     _this.$boardContainer.append(_this.renderer.domElement);
                     _this.camera = new THREE.PerspectiveCamera(20, boardDimensions.x / boardDimensions.y, 1, 30000);
                     _this.configureControls(_this.camera);
-                    _this.plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(10000, 10000, 8, 8), new THREE.MeshBasicMaterial({ visible: false }));
+                    _this.plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(30000, 30000, 8, 8), new THREE.MeshBasicMaterial({ visible: false }));
                     _this.scene.add(_this.plane);
                     DeckOfCards.loadTexture('images/wood512.jpg').then(function (wood) {
                         wood.wrapT = wood.wrapS = THREE.RepeatWrapping;
@@ -1250,6 +1250,7 @@ var DeckOfCards;
                     }
                     _this.render();
                 };
+                this.counter = 0;
                 this.onMouseMove = function (event) {
                     var mouse = {
                         x: (event.clientX / DeckOfCards.Globals.boardDimensions().x) * 2 - 1,
@@ -1274,7 +1275,7 @@ var DeckOfCards;
                     var allCards = Object.keys(_this.allCards).map(function (key) { return _this.allCards[key]; });
                     var intersects = _this.raycaster.intersectObjects(allCards, true);
                     if (intersects.length > 0) {
-                        _this.plane.position.copy(intersects[0].object.parent.position);
+                        _this.plane.position.copy(intersects[intersects.length - 1].object.parent.position);
                         _this.plane.lookAt(_this.camera.position);
                         _this.$boardContainer.css('cursor', 'pointer');
                     }
