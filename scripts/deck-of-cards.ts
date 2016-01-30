@@ -19,7 +19,7 @@ module DeckOfCards {
     init();
 
     function init() {
-        if (Modernizr.webgl && Modernizr.websockets && false) {
+        if (Modernizr.webgl && Modernizr.websockets) {
             new Model.InitializationModel('#board-container').drawScene();
         } else {
             setTimeout(function() {
