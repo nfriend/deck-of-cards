@@ -609,11 +609,39 @@ var DeckOfCards;
         ViewModel.InfoViewModel = InfoViewModel;
     })(ViewModel = DeckOfCards.ViewModel || (DeckOfCards.ViewModel = {}));
 })(DeckOfCards || (DeckOfCards = {}));
+var DeckOfCards;
+(function (DeckOfCards) {
+    var ViewModel;
+    (function (ViewModel) {
+        var UnsupportedBrowserViewModel = (function () {
+            function UnsupportedBrowserViewModel() {
+                var _this = this;
+                this.isVisible = ko.observable(false);
+                this.closeModal = function () {
+                    _this.isVisible(false);
+                };
+                if (UnsupportedBrowserViewModel.Instance) {
+                    throw 'UnsupportedBrowserViewModel is a singleton and has already been instantiated.  Use UnsupportedBrowserViewModel.Instance instead.';
+                }
+                UnsupportedBrowserViewModel.Instance = this;
+            }
+            UnsupportedBrowserViewModel.ShowModal = function () {
+                UnsupportedBrowserViewModel.Instance.isVisible(true);
+            };
+            UnsupportedBrowserViewModel.HideModal = function () {
+                UnsupportedBrowserViewModel.Instance.closeModal();
+            };
+            return UnsupportedBrowserViewModel;
+        })();
+        ViewModel.UnsupportedBrowserViewModel = UnsupportedBrowserViewModel;
+    })(ViewModel = DeckOfCards.ViewModel || (DeckOfCards.ViewModel = {}));
+})(DeckOfCards || (DeckOfCards = {}));
 /// <reference path="./viewModel/ChatViewModel" />
 /// <reference path="./viewModel/PlayerInfoViewModel" />
 /// <reference path="./viewModel/ToolbarViewModel" />
 /// <reference path="./viewModel/modals/AddCardsViewModel" />
 /// <reference path="./viewModel/modals/InfoViewModel" />
+/// <reference path="./viewModel/modals/UnsupportedBrowserViewModel" />
 var DeckOfCards;
 (function (DeckOfCards) {
     ko.components.register('chat', {
@@ -635,6 +663,10 @@ var DeckOfCards;
     ko.components.register('info-modal', {
         template: { url: './views/modals/info.html' },
         viewModel: DeckOfCards.ViewModel.InfoViewModel
+    });
+    ko.components.register('unsupported-browser-modal', {
+        template: { url: './views/modals/unsupported-browser.html' },
+        viewModel: DeckOfCards.ViewModel.UnsupportedBrowserViewModel
     });
 })(DeckOfCards || (DeckOfCards = {}));
 (function () {
@@ -1330,11 +1362,19 @@ var DeckOfCards;
 /// <reference path="./global" />
 /// <reference path="./cardToImagePath" />
 /// <reference path="./model/InitializationModel" />
+/// <reference path="./viewModel/modals/UnsupportedBrowserViewModel" />
 var DeckOfCards;
 (function (DeckOfCards) {
     init();
     function init() {
-        new DeckOfCards.Model.InitializationModel('#board-container').drawScene();
+        if (Modernizr.webgl && Modernizr.websockets && false) {
+            new DeckOfCards.Model.InitializationModel('#board-container').drawScene();
+        }
+        else {
+            setTimeout(function () {
+                DeckOfCards.ViewModel.UnsupportedBrowserViewModel.ShowModal();
+            }, 1000);
+        }
         setUpGlobalInfo();
         startKnockout();
     }

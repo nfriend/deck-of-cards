@@ -3,6 +3,7 @@
 /// <reference path="./viewModel/ToolbarViewModel" />
 /// <reference path="./viewModel/modals/AddCardsViewModel" />
 /// <reference path="./viewModel/modals/InfoViewModel" />
+/// <reference path="./viewModel/modals/UnsupportedBrowserViewModel" />
 
 module DeckOfCards {
 	
@@ -29,5 +30,10 @@ module DeckOfCards {
     ko.components.register('info-modal', {
 		template: { url: './views/modals/info.html' },
 		viewModel: ViewModel.InfoViewModel
+	});
+    
+    ko.components.register('unsupported-browser-modal', {
+		template: { url: './views/modals/unsupported-browser.html' },
+		viewModel: ViewModel.UnsupportedBrowserViewModel
 	});
 }

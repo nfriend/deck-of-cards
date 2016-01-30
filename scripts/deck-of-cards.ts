@@ -13,12 +13,20 @@
 /// <reference path="./global" />
 /// <reference path="./cardToImagePath" />
 /// <reference path="./model/InitializationModel" />
+/// <reference path="./viewModel/modals/UnsupportedBrowserViewModel" />
 
 module DeckOfCards {
     init();
 
     function init() {
-        new Model.InitializationModel('#board-container').drawScene();
+        if (Modernizr.webgl && Modernizr.websockets && false) {
+            new Model.InitializationModel('#board-container').drawScene();
+        } else {
+            setTimeout(function() {
+                ViewModel.UnsupportedBrowserViewModel.ShowModal();
+            }, 1000);
+        }
+
         setUpGlobalInfo();
         startKnockout();
     }
