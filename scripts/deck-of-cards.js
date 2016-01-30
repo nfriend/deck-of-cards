@@ -696,11 +696,18 @@ var DeckOfCards;
 })();
 var DeckOfCards;
 (function (DeckOfCards) {
+    var textureCache = {};
     function loadTexture(url) {
         var defer = $.Deferred();
-        new THREE.TextureLoader().load(url, function (texture) {
-            defer.resolve(texture);
-        });
+        if (textureCache[url]) {
+            defer.resolve(textureCache[url]);
+        }
+        else {
+            new THREE.TextureLoader().load(url, function (texture) {
+                textureCache[url] = texture;
+                defer.resolve(texture);
+            });
+        }
         return defer;
     }
     DeckOfCards.loadTexture = loadTexture;
