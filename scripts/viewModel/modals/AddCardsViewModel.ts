@@ -79,21 +79,21 @@ module DeckOfCards.ViewModel {
                         count: ko.observable(0),
                         cardValueEnum: CardValue.Jack
                     });
-                    
+
                     suit.cards.push({
                         name: 'Queen',
                         imageUrl: suit.name.toLowerCase() + '/queen.svg',
                         count: ko.observable(0),
                         cardValueEnum: CardValue.Queen
                     });
-                    
+
                     suit.cards.push({
                         name: 'King',
                         imageUrl: suit.name.toLowerCase() + '/king.svg',
                         count: ko.observable(0),
                         cardValueEnum: CardValue.King
                     });
-                    
+
                     suit.cards.push({
                         name: 'Ace',
                         imageUrl: suit.name.toLowerCase() + '/ace.svg',
@@ -117,6 +117,9 @@ module DeckOfCards.ViewModel {
                 }
             });
         }
+
+        shuffled = ko.observable(true);
+        faceDown = ko.observable(true);
 
         cardMousedown = (card: CardForBinding, ev: JQueryMouseEventObject) => {
 
@@ -183,6 +186,10 @@ module DeckOfCards.ViewModel {
                     }
                 });
             });
+            
+            if (this.shuffled()) {
+                Utility.shuffle(cards);
+            }
 
             let addCardsMessage: AddCardsMessage = {
                 messageType: 'addCards',

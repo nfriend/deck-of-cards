@@ -15,8 +15,28 @@
     <p>Click on a card to add one more of that card to the board. Right-click to remove. When you are finished with your selections,
         click the "Add Cards" button at the bottom of this dialog.</p>
     <div style="text-align: center;">
-        <button class="btn btn-default" data-bind="click: addFullDeck">Add full deck</button>
-        <button class="btn btn-default" data-bind="click: clearAll">Clear all</button>
+        <div class="btn-group">
+            <button class="btn btn-default" data-bind="click: addFullDeck">Add full deck</button>
+            <button class="btn btn-default" data-bind="click: clearAll">Clear all</button>
+        </div>
+        <div class="btn-group">
+            <button id="shuffled-button" class="btn btn-default" data-bind="toggle: shuffled">Shuffled&nbsp;
+                <span data-bind="if: shuffled">
+                <i class="fa fa-check-square-o"></i>
+            </span>
+                <span data-bind="ifnot: shuffled">
+                <i class="fa fa-square-o"></i>
+            </span>
+            </button>
+            <button id="face-down-button" class="btn btn-default" data-bind="toggle: faceDown">Face down&nbsp;
+                <span data-bind="if: faceDown">
+                <i class="fa fa-check-square-o"></i>
+            </span>
+                <span data-bind="ifnot: faceDown">
+                <i class="fa fa-square-o"></i>
+            </span>
+            </button>
+        </div>
     </div>
     <div class="card-container no-select" data-bind="foreach: { data: suits, as: 'suit' }">
         <hr />

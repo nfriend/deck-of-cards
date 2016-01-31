@@ -422,6 +422,8 @@ var DeckOfCards;
                 var _this = this;
                 this.isVisible = ko.observable(false);
                 this.suits = [];
+                this.shuffled = ko.observable(true);
+                this.faceDown = ko.observable(true);
                 this.cardMousedown = function (card, ev) {
                     if (ev.which === MouseButton.LeftButton) {
                         card.count(card.count() + 1);
@@ -480,6 +482,9 @@ var DeckOfCards;
                             }
                         });
                     });
+                    if (_this.shuffled()) {
+                        DeckOfCards.Utility.shuffle(cards);
+                    }
                     var addCardsMessage = {
                         messageType: 'addCards',
                         data: {
@@ -1092,6 +1097,22 @@ var DeckOfCards;
             });
         }
         Utility.newGuid = newGuid;
+        // from http://stackoverflow.com/a/2450976/1063392
+        function shuffle(arr) {
+            var currentIndex = arr.length, temporaryValue, randomIndex;
+            // While there remain elements to shuffle...
+            while (0 !== currentIndex) {
+                // Pick a remaining element...
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+                // And swap it with the current element.
+                temporaryValue = arr[currentIndex];
+                arr[currentIndex] = arr[randomIndex];
+                arr[randomIndex] = temporaryValue;
+            }
+            return arr;
+        }
+        Utility.shuffle = shuffle;
     })(Utility = DeckOfCards.Utility || (DeckOfCards.Utility = {}));
 })(DeckOfCards || (DeckOfCards = {}));
 ko.observableArray.fn['pushRange'] = function (newItems) {
