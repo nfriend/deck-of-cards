@@ -1302,6 +1302,7 @@ var DeckOfCards;
                     if (intersects.length > 0) {
                         _this.controls.enabled = false;
                         _this.selectedObject = intersects[intersects.length - 1].object.parent;
+                        _this.selectedObject.position.setZ(_this.selectedObject.position.z + 0.000001);
                         var planeIntersect = _this.raycaster.intersectObject(_this.plane);
                         if (planeIntersect.length > 0) {
                             _this.offset.copy(planeIntersect[0].point).sub(_this.plane.position);

@@ -153,7 +153,10 @@ module DeckOfCards.Model {
 
             if (intersects.length > 0) {
                 this.controls.enabled = false;
-                this.selectedObject = intersects[intersects.length - 1].object.parent;
+                this.selectedObject = intersects [intersects.length - 1].object.parent;
+                
+                this.selectedObject.position.setZ(this.selectedObject.position.z + 0.000001);
+                
                 let planeIntersect = this.raycaster.intersectObject(this.plane);
                 if (planeIntersect.length > 0) {
                     this.offset.copy(planeIntersect[0].point).sub(this.plane.position);
